@@ -1,0 +1,59 @@
+[build-system]
+requires = ["setuptools>=77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "django-telegram-app"
+version = "0.1"
+dependencies = [
+    "django>=5.2",
+]
+description = "A Django app that integrates with Telegram to create bots."
+readme = "README.md"
+license = "MIT"
+requires-python = ">= 3.10"
+authors = [
+    { name="Sonny Valkeneers", email="sonny@softllama.net" },
+]
+classifiers = [
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Framework :: Django :: 5.2",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Internet",
+    "Topic :: Communications :: Chat",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[tool.ruff]
+line-length = 120
+extend-exclude = ["**/migrations"]
+
+[tool.ruff.lint]
+select = ["B", "C901", "D", "E4", "E7", "E9", "F", "I", "W", "ARG", "FIX", "A"]
+ignore = ["FIX002"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.pylint.MASTER]
+ignore = [ 'migrations' ]
+
+[tool.pylint."MESSAGES CONTROL"]
+disable = "all"
+enable = "C1805,E1120,R1705,W0107,W0221,W0223,W0613,W0632,W0719,W2301,W3101"
+
+[tool.pyright]
+exclude = [ "**/migrations", "**/tests.py"]
+typeCheckingMode = "standard"
+deprecateTypingAliases = true
