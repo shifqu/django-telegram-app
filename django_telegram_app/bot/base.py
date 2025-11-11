@@ -43,7 +43,10 @@ class BaseCommand:
         """Cancel the command and clear all data."""
         from django_telegram_app.bot.bot import send_message
 
-        send_message("Command canceled", self.settings.chat_id)
+        logging.info(f"Canceled the command at step {current_step_name}")
+        data = self.get_callback_data(telegram_update.callback_data)
+        cancel_text = data.get("cancel_text", "Command canceled.")
+        send_message(cancel_text, self.settings.chat_id)
         return self.finish(current_step_name, telegram_update)
 
     def next_step(self, current_step_name: str, telegram_update: TelegramUpdate):
