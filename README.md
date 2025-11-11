@@ -3,6 +3,18 @@ A Django app to integrate Telegram bots into your project.
 
 Detailed documentation is in the [`docs/`](docs/) directory.
 
+---
+[![Code style: Ruff](https://img.shields.io/badge/style-ruff-8b5000)](https://github.com/astral-sh/ruff)
+[![Typing: Pyright](https://img.shields.io/badge/typing-pyright-725a42
+)](https://github.com/RobertCraigie/pyright-python)
+[![Linting: Pylint](https://img.shields.io/badge/typing-pylint-755147
+)](https://github.com/pylint-dev/pylint)
+[![Framework: Django](https://img.shields.io/badge/framework-django-727242)](https://docs.djangoproject.com/en/5.2/)
+[![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://opensource.org/license/mit)
+[![CI Validation](https://github.com/shifqu/django-telegram-app/actions/workflows/ci.yml/badge.svg)](https://github.com/shifqu/django-telegram-app/actions/workflows/ci.yml)
+
+---
+
 ## Features
 
 - ✅ Command-based bot architecture with step-based flow
