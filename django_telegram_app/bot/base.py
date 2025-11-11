@@ -157,10 +157,6 @@ class Step:
         """Create a callback to reload the current step with the provided data."""
         return self._create_callback("current_step", **kwargs)
 
-    def finish_callback(self, **kwargs):
-        """Create a callback to finish the command."""
-        return self._create_callback("finish", **kwargs)
-
     def cancel_callback(self, **kwargs):
         """Create a callback to cancel the command."""
         return self._create_callback("cancel", **kwargs)
