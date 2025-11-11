@@ -43,7 +43,10 @@ class BaseCommand:
         """Cancel the command and clear all data."""
         from django_telegram_app.bot.bot import send_message
 
-        send_message("Command canceled", self.settings.chat_id)
+        logging.info(f"Canceled the command at step {current_step_name}")
+        data = self.get_callback_data(telegram_update.callback_data)
+        cancel_text = data.get("cancel_text", "Command canceled.")
+        send_message(cancel_text, self.settings.chat_id)
         return self.finish(current_step_name, telegram_update)
 
     def next_step(self, current_step_name: str, telegram_update: TelegramUpdate):
@@ -82,7 +85,7 @@ class BaseCommand:
     def get_callback_data(self, callback_token: str) -> dict[str, Any]:
         """Get callback data from the callback token.
 
-        If the callback token is not provided, return an empty dictionary.
+        If the callback token is not provided, return default callback data.
         """
         if not callback_token:
             return self._get_default_callback_data()
@@ -119,9 +122,7 @@ class BaseCommand:
     def _clear_callback_data(self, telegram_update: TelegramUpdate):
         """Clear callback data for the current command."""
         step_data = self.get_callback_data(telegram_update.callback_data)
-        correlation_key = step_data["correlation_key"]
-        if not correlation_key:
-            return
+        correlation_key = step_data.get("correlation_key", "non_existent_key")
         CallbackData.objects.filter(data__correlation_key=correlation_key).delete()
 
     def _steps_to_str(self):
@@ -156,10 +157,6 @@ class Step:
         """Create a callback to reload the current step with the provided data."""
         return self._create_callback("current_step", **kwargs)
 
-    def finish_callback(self, **kwargs):
-        """Create a callback to finish the command."""
-        return self._create_callback("finish", **kwargs)
-
     def cancel_callback(self, **kwargs):
         """Create a callback to cancel the command."""
         return self._create_callback("cancel", **kwargs)
@@ -179,7 +176,7 @@ class Step:
         in the appropriate key in the callback data.
 
         Otherwise, retrieve the callback data using the callback token from the update.
-        If no callback token is provided, return an empty dictionary.
+        If no callback token is provided, return default callback data.
         """
         if not telegram_update.callback_data and telegram_update.is_message() and not telegram_update.is_command():
             waiting_for = self.command.settings.data.get("_waiting_for", None)

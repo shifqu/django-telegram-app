@@ -54,10 +54,7 @@ def send_help(chat_id: int, telegram_settings: "AbstractTelegramSettings"):
         command_info_list.append(f"{command.get_command_string()} - {command.description}")
 
     commands_text = "\n".join(command_info_list)
-    help_text = (
-        "Currently available commands:\n"
-        f"{commands_text}"
-    )
+    help_text = f"Currently available commands:\n{commands_text}"
     send_message(help_text, chat_id)
 
 
@@ -109,17 +106,21 @@ def _start_command_or_send_help(telegram_update: TelegramUpdate, telegram_settin
 
 
 def _call_command_step(token: str, telegram_settings: "AbstractTelegramSettings", telegram_update: TelegramUpdate):
-    """Call a command's step from the provided data."""
+    """Call a command's step from the provided data.
+
+    Return True if the step was called successfully, False otherwise.
+    """
     if token == DO_NOTHING:
-        return
+        return False
 
     try:
         data = CallbackData.objects.get(token=token)
-    except CallbackData.DoesNotExist as exc:
+    except CallbackData.DoesNotExist:
         send_message("This command has expired.", telegram_update.chat_id, message_id=telegram_update.message_id)
-        raise ValueError("This command has expired.") from exc
+        return False
 
     command_name = data.command.lstrip("/")
     command_info = get_commands()[command_name]
     command = load_command_class(command_info, command_name, telegram_settings)
     getattr(command, data.action)(data.step, telegram_update)
+    return True
