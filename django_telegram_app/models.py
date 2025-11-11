@@ -107,7 +107,7 @@ class CallbackData(models.Model):
 
     def __str__(self):
         """Return a string representation of the callback data."""
-        return f"{self.token} - {self.data}"
+        return f"{self.token} - {self.data_truncated}"
 
     @property
     def data_truncated(self):
