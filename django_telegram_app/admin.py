@@ -17,7 +17,7 @@ class CallbackDataAdmin(admin.ModelAdmin):
 
     list_display = ("token", "data_truncated")
 
-    def has_add_permission(self, request, obj=None):  # noqa: ARG002  # pylint: disable=unused-argument
+    def has_add_permission(self, request):  # noqa: ARG002  # pylint: disable=unused-argument
         """Do not allow to add callback_data."""
         return False
 
@@ -35,7 +35,7 @@ class MessageAdmin(admin.ModelAdmin):
 
     list_display = ("update_id", "message_truncated", "error")
 
-    def has_add_permission(self, request, obj=None):  # noqa: ARG002  # pylint: disable=unused-argument
+    def has_add_permission(self, request):  # noqa: ARG002  # pylint: disable=unused-argument
         """Do not allow to add messages."""
         return False
 
