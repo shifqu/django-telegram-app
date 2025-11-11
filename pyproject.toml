@@ -36,6 +36,13 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "coverage>=7.11",
+    "django-types>=0.22",
+    "ruff>=0.14",
+]
+
 [tool.ruff]
 line-length = 120
 extend-exclude = ["**/migrations"]
