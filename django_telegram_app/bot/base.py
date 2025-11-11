@@ -122,9 +122,7 @@ class BaseCommand:
     def _clear_callback_data(self, telegram_update: TelegramUpdate):
         """Clear callback data for the current command."""
         step_data = self.get_callback_data(telegram_update.callback_data)
-        correlation_key = step_data["correlation_key"]
-        if not correlation_key:
-            return
+        correlation_key = step_data.get("correlation_key", "non_existent_key")
         CallbackData.objects.filter(data__correlation_key=correlation_key).delete()
 
     def _steps_to_str(self):
