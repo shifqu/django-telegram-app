@@ -1,4 +1,4 @@
-name: "CI Validation: Django Telegram App"
+name: "CI Validation"
 
 on:
   pull_request:
