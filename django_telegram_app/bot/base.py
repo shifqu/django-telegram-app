@@ -85,7 +85,7 @@ class BaseCommand:
     def get_callback_data(self, callback_token: str) -> dict[str, Any]:
         """Get callback data from the callback token.
 
-        If the callback token is not provided, return an empty dictionary.
+        If the callback token is not provided, return default callback data.
         """
         if not callback_token:
             return self._get_default_callback_data()
@@ -182,7 +182,7 @@ class Step:
         in the appropriate key in the callback data.
 
         Otherwise, retrieve the callback data using the callback token from the update.
-        If no callback token is provided, return an empty dictionary.
+        If no callback token is provided, return default callback data.
         """
         if not telegram_update.callback_data and telegram_update.is_message() and not telegram_update.is_command():
             waiting_for = self.command.settings.data.get("_waiting_for", None)
