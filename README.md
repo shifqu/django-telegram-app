@@ -32,6 +32,11 @@ Detailed documentation is in the [`docs/`](docs/) directory.
 
 ## Quick start
 
+1. Install the package
+    ```bash
+    pip install django-telegram-app
+    ```
+
 1. Add "django_telegram_app" to your INSTALLED_APPS setting like this:
     ```python
     INSTALLED_APPS = [
