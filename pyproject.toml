@@ -36,6 +36,12 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 
+[project.urls]
+Repository = "https://github.com/shifqu/django-telegram-app.git"
+Issues = "https://github.com/shifqu/django-telegram-app/issues"
+ReleaseNotes = "https://github.com/shifqu/django-telegram-app/releases"
+Funding = "https://github.com/sponsors/shifqu"
+
 [project.optional-dependencies]
 dev = [
     "coverage>=7.11",
