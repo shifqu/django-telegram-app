@@ -1,7 +1,7 @@
 # django-telegram-app
 A Django app to integrate Telegram bots into your project.
 
-Detailed documentation is in the [`docs/`](docs/) directory.
+Detailed documentation is in the [`docs/`](https://github.com/shifqu/django-telegram-app/tree/main/docs/) directory.
 
 ---
 [![Code style: Ruff](https://img.shields.io/badge/style-ruff-8b5000)](https://github.com/astral-sh/ruff)
@@ -85,4 +85,4 @@ Minimal configuration is like this:
 
 ## License
 
-This project is licensed under the MIT License — see the [`LICENSE`](LICENSE) file for details.
+This project is licensed under the MIT License — see the [`LICENSE`](https://github.com/shifqu/django-telegram-app/blob/main/LICENSE) file for details.
