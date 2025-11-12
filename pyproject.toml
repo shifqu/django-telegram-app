@@ -1,10 +1,10 @@
 [build-system]
-requires = ["setuptools>=77.0.3"]
+requires = ["setuptools>=80", "setuptools-scm[simple]>=8"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "django-telegram-app"
-version = "0.1"
+dynamic = ["version"]
 dependencies = [
     "django>=5.2",
     "requests>=2.32",
@@ -36,6 +36,12 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 
+[project.urls]
+Repository = "https://github.com/shifqu/django-telegram-app.git"
+Issues = "https://github.com/shifqu/django-telegram-app/issues"
+ReleaseNotes = "https://github.com/shifqu/django-telegram-app/releases"
+Funding = "https://github.com/sponsors/shifqu"
+
 [project.optional-dependencies]
 dev = [
     "coverage>=7.11",
@@ -43,6 +49,7 @@ dev = [
     "ruff>=0.14",
     "pylint<4.0",
     "pyright>=1.1",
+    "build>=1.3",
 ]
 
 [tool.ruff]
