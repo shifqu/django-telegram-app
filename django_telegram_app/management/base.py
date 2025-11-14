@@ -8,6 +8,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils.translation import override
 
+from django_telegram_app.bot.base import BaseCommand as BaseBotCommand
 from django_telegram_app.bot.bot import handle_update
 from django_telegram_app.conf import settings as app_settings
 from django_telegram_app.resolver import get_telegram_settings_model
@@ -16,7 +17,7 @@ from django_telegram_app.resolver import get_telegram_settings_model
 class BaseTelegramCommand(BaseCommand):
     """Base command class to start Telegram bot commands."""
 
-    command_text: str = ""
+    command: type[BaseBotCommand] | None = None
 
     def add_arguments(self, parser):
         """Add command arguments."""
@@ -34,8 +35,9 @@ class BaseTelegramCommand(BaseCommand):
         The chat_id is configured on the user as a TelegramSetting.
         A fake update is created with a message containing the command, this is not persisted.
         """
-        if not self.command_text:
-            raise ValueError("The attribute command_text must be set.")
+        if not self.command:
+            raise ValueError("The attribute `command` must be set.")
+        command_text = self.command.get_command_string()
 
         if not options["force"] and not self.should_run():
             return
@@ -43,7 +45,7 @@ class BaseTelegramCommand(BaseCommand):
         for telegram_settings in get_telegram_settings_model().objects.filter(user__is_active=True):
             user_language = get_user_language(telegram_settings.user)
             with override(user_language, deactivate=True):
-                update = {"message": {"chat": {"id": telegram_settings.chat_id}, "text": self.command_text}}
+                update = {"message": {"chat": {"id": telegram_settings.chat_id}, "text": command_text}}
                 handle_update(update=update)
             self.stdout.write(self.style.SUCCESS(f"Started the command for {telegram_settings.user}."))
 
