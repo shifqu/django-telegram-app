@@ -10,7 +10,7 @@ class Command(BaseCommand):
     description = "Poll for a user's favourite sport."
 
     @property
-    def steps(self) -> list[Step]:
+    def steps(self):
         """Return the steps of the command."""
         return [AskFavouriteSport(self), Confirm(self, steps_back=1), Respond(self)]
 
