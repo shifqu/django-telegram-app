@@ -4,11 +4,11 @@ from typing import TYPE_CHECKING
 
 import requests
 
+from django_telegram_app import get_telegram_settings_model
 from django_telegram_app.bot import get_commands, load_command_class
 from django_telegram_app.bot.base import TelegramUpdate
 from django_telegram_app.conf import settings
 from django_telegram_app.models import CallbackData
-from django_telegram_app.resolver import get_telegram_settings_model
 
 if TYPE_CHECKING:
     from django_telegram_app.models import AbstractTelegramSettings

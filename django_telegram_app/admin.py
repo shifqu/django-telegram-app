@@ -2,8 +2,8 @@
 
 from django.contrib import admin
 
+from django_telegram_app import get_telegram_settings_model
 from django_telegram_app.models import CallbackData, Message
-from django_telegram_app.resolver import get_telegram_settings_model
 
 
 class TelegramSettingInline(admin.TabularInline):

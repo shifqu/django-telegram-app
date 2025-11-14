@@ -7,10 +7,10 @@ from unittest.mock import MagicMock, patch
 from django.contrib.auth import get_user_model
 from django.test import SimpleTestCase
 
+from django_telegram_app import get_telegram_settings_model
 from django_telegram_app.bot import get_commands, load_command_class
 from django_telegram_app.bot.testing.testcases import TelegramBotTestCase
 from django_telegram_app.models import CallbackData, Message
-from django_telegram_app.resolver import get_telegram_settings_model
 from tests.testapps.samplebot.telegrambot.commands.echo import Command as EchoCommand
 from tests.testapps.samplebot.telegrambot.commands.poll import Command as PollCommand
 

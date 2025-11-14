@@ -1,18 +1,17 @@
-"""Tests for command resolver functionality."""
+"""Tests for the get_telegram_settings function."""
 
 from django.core.exceptions import ImproperlyConfigured
 from django.test import TestCase, override_settings
 
-from django_telegram_app.resolver import get_telegram_settings_model
+from django_telegram_app import get_telegram_settings_model
 
 
-class ResolverTests(TestCase):
-    """Tests for the resolver functions."""
+class GetModelTests(TestCase):
+    """Tests for the get_telegram_settings function."""
 
     def test_get_telegram_settings_model_default(self):
         """Test that the default TelegramSettings model is returned when no custom model is set."""
         from django_telegram_app.models import TelegramSettings
-        from django_telegram_app.resolver import get_telegram_settings_model
 
         model = get_telegram_settings_model()
         self.assertEqual(model, TelegramSettings)
