@@ -22,7 +22,7 @@ class Command(BaseCommand):
     description = "Ask the user a simple question and provide yes/no buttons."
 
     @property
-    def steps(self) -> list[Step]:
+    def steps(self):
         """Return the steps of the command."""
         return [AskYesOrNo(self)]
 

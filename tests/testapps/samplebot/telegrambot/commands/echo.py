@@ -10,7 +10,7 @@ class Command(BaseCommand):
     description = "Responds with the same message."
 
     @property
-    def steps(self) -> list[Step]:
+    def steps(self):
         """Return the steps of the command."""
         return [WaitForInput(self), Echo(self)]
 

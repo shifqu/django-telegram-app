@@ -1,4 +1,4 @@
-# ⚙️ Configure the Telegram bot
+# ⚙️ Configuring the Telegram bot
 
 All configuration for **django-telegram-app** is provided inside a single TELEGRAM dictionary in your Django settings.
 Only one setting (`TELEGRAM_SETTINGS_MODEL`) is defined outside this dictionary, as required by Django’s swappable-model system.
@@ -10,7 +10,7 @@ TELEGRAM = {
     ...
 }
 
-TELEGRAM_SETTINGS_MODEL = "django_telegram_app.TelegramSettings"
+TELEGRAM_SETTINGS_MODEL = "django_telegram_app.TelegramSettings"  # This is the default and can be omitted.
 ```
 
 

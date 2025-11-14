@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import logging
 import uuid
+from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any, cast
 
 from django_telegram_app.models import CallbackData
@@ -93,7 +94,7 @@ class BaseCommand:
         return callback_data.data
 
     @property
-    def steps(self) -> list[Step]:
+    def steps(self) -> Sequence[Step]:
         """Return the steps of the command."""
         raise NotImplementedError("Subclasses must implement this method")
 
