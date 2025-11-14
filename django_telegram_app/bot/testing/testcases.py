@@ -11,10 +11,10 @@ from django_telegram_app.conf import settings
 class TelegramBotTestCase(TestCase):
     """Base test case for Telegram bot tests."""
 
-    @classmethod
-    def setUpTestData(cls):
-        """Set up test data for the testcase."""
-        cls.url = reverse("webhook")
+    @property
+    def webhook_url(self):
+        """Return the webhook URL."""
+        return reverse("webhook")
 
     @classmethod
     def tearDownClass(cls):
@@ -44,7 +44,7 @@ class TelegramBotTestCase(TestCase):
     def post_data(self, data: dict, verify: bool = True):
         """Post data to the webhook."""
         response = self.client.post(
-            self.url,
+            self.webhook_url,
             data=data,
             headers={"X-Telegram-Bot-Api-Secret-Token": settings.WEBHOOK_TOKEN},
             content_type="application/json",
