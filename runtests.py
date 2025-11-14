@@ -13,7 +13,7 @@ from django.test.utils import get_runner
 
 def main():
     """Run the test suite."""
-    os.environ["DJANGO_SETTINGS_MODULE"] = "tests.settings"
+    os.environ["DJANGO_SETTINGS_MODULE"] = "tests.testapps.settings"
     django.setup()
     TestRunner = get_runner(settings)
     test_runner = TestRunner()

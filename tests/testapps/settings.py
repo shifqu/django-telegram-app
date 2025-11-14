@@ -3,7 +3,7 @@
 SECRET_KEY = "test-secret"
 DEBUG = True
 USE_TZ = True
-ROOT_URLCONF = "tests.urls"
+ROOT_URLCONF = "tests.testapps.urls"
 
 INSTALLED_APPS = [
     "django.contrib.admin",
