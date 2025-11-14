@@ -40,6 +40,7 @@ class BaseTelegramCommand(BaseCommand):
         command_text = self.command.get_command_string()
 
         if not options["force"] and not self.should_run():
+            self.stdout.write(self.style.NOTICE(f"Command '{command_text}' skipped as should_run returned False."))
             return
 
         for telegram_settings in get_telegram_settings_model().objects.filter(user__is_active=True):
@@ -48,6 +49,8 @@ class BaseTelegramCommand(BaseCommand):
                 update = {"message": {"chat": {"id": telegram_settings.chat_id}, "text": command_text}}
                 handle_update(update=update)
             self.stdout.write(self.style.SUCCESS(f"Started the command for {telegram_settings.user}."))
+        else:
+            self.stdout.write(self.style.NOTICE("No Telegram-enabled users found. Nothing to do."))
 
     def should_run(self) -> bool:
         """Determine if the command should run."""
