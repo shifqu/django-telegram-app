@@ -1,5 +1,5 @@
 # Writing a custom management command
-Django telegram app provides a base management command (TelegramCommand) to facilitate calling telegram commands using `manage.py`.
+Django telegram app provides a base management command (BaseTelegramCommand) to facilitate calling telegram commands using `manage.py`.
 This command automatically activates (and later deactivates) the user's configured language (fallback to settings.LANGUAGE_CODE).
 Another specificity is that the class provides a should_run function which should return a boolean. This could be useful when the command is configured to run daily using a cronjob, but should not run on specific days.
 
@@ -12,10 +12,10 @@ An example of a custom management command:
 
 from django.utils import timezone
 
-from django_telegram_app.management.base import TelegramCommand
+from django_telegram_app.management.base import BaseTelegramCommand
 
 
-class Command(TelegramCommand):
+class Command(BaseTelegramCommand):
     """Start the customcommand command."""
 
     help = "Start the customcommand command to ask users yes or no."

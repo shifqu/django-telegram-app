@@ -13,7 +13,7 @@ from django_telegram_app.conf import settings as app_settings
 from django_telegram_app.resolver import get_telegram_settings_model
 
 
-class TelegramCommand(BaseCommand):
+class BaseTelegramCommand(BaseCommand):
     """Base command class to start Telegram bot commands."""
 
     command_text: str = ""
