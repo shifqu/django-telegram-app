@@ -168,6 +168,12 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
+# VSCode
+#  VSCode settings often contain project-specific settings or launch configurations.
+#  For libraries, it is often best to not check these in.  For applications, you might want
+#  to check these in to share with your team.
+.vscode/
+
 # PyPI configuration file
 .pypirc
 
