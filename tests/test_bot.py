@@ -21,7 +21,6 @@ class BotTests(TelegramBotTestCase):
     @classmethod
     def setUpTestData(cls):
         """Set up test data."""
-        super().setUpTestData()
         cls.user = get_user_model().objects.create_user(username="dummyuser", password="dummypass")
         cls.telegram_setting = get_telegram_settings_model().objects.create(user=cls.user, chat_id=123456789)
 
@@ -50,7 +49,7 @@ class BotTests(TelegramBotTestCase):
     def test_telegram_invalid_token(self):
         """Test the telegram app with an invalid token."""
         response = self.client.post(
-            self.url,
+            self.webhook_url,
             data={},
             headers={"X-Telegram-Bot-Api-Secret-Token": "invalid_token"},
             content_type="application/json",
@@ -152,7 +151,7 @@ class BotTests(TelegramBotTestCase):
         """Test that any token is valid if BOT_API_SECRET_TOKEN is not configured."""
         with patch("django_telegram_app.bot.bot.settings.WEBHOOK_TOKEN", ""):
             response = self.client.post(
-                self.url,
+                self.webhook_url,
                 data={},
                 headers={"X-Telegram-Bot-Api-Secret-Token": "any_token"},
                 content_type="application/json",
