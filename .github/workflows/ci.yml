@@ -31,7 +31,7 @@ jobs:
 
       - name: Tests with Coverage
         run: |
-          coverage run -m runtests
+          coverage run -m runtests -q
 
       - name: Coverage Report
         run: |
