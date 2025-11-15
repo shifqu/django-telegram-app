@@ -1,5 +1,0 @@
-[run]
-source = 
-    django_telegram_app
-    tests
-    runtests
