@@ -1,5 +1,8 @@
 """Tests for the get_telegram_settings function."""
 
+from unittest.mock import patch
+
+from django.apps import apps as django_apps
 from django.core.exceptions import ImproperlyConfigured
 from django.test import TestCase, override_settings
 
@@ -37,3 +40,10 @@ class GetModelTests(TestCase):
         msg = "TELEGRAM_SETTINGS_MODEL must be of the form 'app_label.model_name'"
         with self.assertRaises(ImproperlyConfigured, msg=msg):
             get_telegram_settings_model()
+
+    @override_settings(TELEGRAM_SETTINGS_MODEL="tests_samplebot.CustomTelegramSettings")
+    def test_get_telegram_settings_model_propagates_unhandled_exceptions(self):
+        """Test that unhandled exceptions are propagated."""
+        with patch.object(django_apps, "get_model", side_effect=RuntimeError("Unexpected error")):
+            with self.assertRaises(RuntimeError, msg="Unexpected error"):
+                get_telegram_settings_model()

@@ -11,6 +11,8 @@ from django.core.management.base import CommandError
 from django_telegram_app import get_telegram_settings_model
 from django_telegram_app.bot.testing.testcases import TelegramBotTestCase
 
+SETWEBHOOK_PATH = "django_telegram_app.management.commands.setwebhook"
+
 
 class ManagementCommandTests(TelegramBotTestCase):
     """Tests for management commands."""
@@ -78,10 +80,21 @@ class ManagementCommandTests(TelegramBotTestCase):
         """Test that the set_webhook command runs without errors."""
         out = StringIO()
         # Patch requests.post to avoid real HTTP calls
-        with patch("django_telegram_app.management.commands.setwebhook.requests.post") as mock_post:
+        with patch(f"{SETWEBHOOK_PATH}.requests.post") as mock_post:
             mock_post.return_value.status_code = 200
             mock_post.return_value.json.return_value = {"ok": True, "result": True}
             call_command("setwebhook", stdout=out)
+        self.assertIn("Successfully set webhook to", out.getvalue())
+
+    def test_set_webhook_command_no_token(self):
+        """Test that the set_webhook command runs without errors."""
+        out = StringIO()
+        # Patch requests.post to avoid real HTTP calls
+        with patch(f"{SETWEBHOOK_PATH}.requests.post") as mock_post:
+            with patch(f"{SETWEBHOOK_PATH}.app_settings.WEBHOOK_TOKEN", ""):
+                mock_post.return_value.status_code = 200
+                mock_post.return_value.json.return_value = {"ok": True, "result": True}
+                call_command("setwebhook", stdout=out)
         self.assertIn("Successfully set webhook to", out.getvalue())
 
     def test_set_webhook_command_failure(self):
@@ -89,7 +102,7 @@ class ManagementCommandTests(TelegramBotTestCase):
         out = StringIO()
         err = StringIO()
         # Patch requests.post to simulate a failure response
-        with patch("django_telegram_app.management.commands.setwebhook.requests.post") as mock_post:
+        with patch(f"{SETWEBHOOK_PATH}.requests.post") as mock_post:
             mock_post.return_value.status_code = 200
             mock_post.return_value.json.return_value = {"ok": False, "description": "Invalid URL"}
             with self.assertRaises(CommandError, msg="Failed to set webhook to"):
