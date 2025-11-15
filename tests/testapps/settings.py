@@ -3,7 +3,7 @@
 SECRET_KEY = "test-secret"
 DEBUG = True
 USE_TZ = True
-ROOT_URLCONF = "tests.urls"
+ROOT_URLCONF = "tests.testapps.urls"
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -51,3 +51,5 @@ TELEGRAM = {
     "USER_LANGUAGE_ATTRS": ("language", "lang", "preferred_language"),
     "WEBHOOK_TOKEN": "test-webhook-token",
 }
+
+DOMAIN_NAME = "https://127.0.0.1:8000"

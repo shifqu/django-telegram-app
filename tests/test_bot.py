@@ -7,10 +7,10 @@ from unittest.mock import MagicMock, patch
 from django.contrib.auth import get_user_model
 from django.test import SimpleTestCase
 
+from django_telegram_app import get_telegram_settings_model
 from django_telegram_app.bot import get_commands, load_command_class
 from django_telegram_app.bot.testing.testcases import TelegramBotTestCase
 from django_telegram_app.models import CallbackData, Message
-from django_telegram_app.resolver import get_telegram_settings_model
 from tests.testapps.samplebot.telegrambot.commands.echo import Command as EchoCommand
 from tests.testapps.samplebot.telegrambot.commands.poll import Command as PollCommand
 
@@ -189,6 +189,42 @@ class BotTests(TelegramBotTestCase):
         step = Step(MagicMock())
         with self.assertRaises(NotImplementedError):
             step.handle(MagicMock())
+
+    def test_steps_back_does_nothing_when_idx_out_of_bounds(self):
+        """Test that steps_back does nothing when index would go out of bounds."""
+        from django_telegram_app.bot.base import BaseCommand, Step
+
+        class DummyCommand(BaseCommand):
+            @property
+            def steps(self):
+                return [Step(self, unique_id="step_1", steps_back=1), Step(self, unique_id="step_2")]
+
+        telegram_settings = MagicMock(name="telegram_settings")
+        telegram_update = MagicMock(name="telegram_update")
+
+        command = DummyCommand(telegram_settings)
+        with patch.object(command, "get_callback_data", return_value={"_steps_back": 1}):
+            command.previous_step("step_1", telegram_update)  # Go back from first step, this should just do nothing
+
+    def test_step_get_callback_data_calls_command_get_callback_data_if_not_waiting_for_input(self):
+        """Test that Step.get_callback_data calls Command.get_callback_data if not waiting for input."""
+        from django_telegram_app.bot.base import BaseCommand, Step
+
+        class DummyCommand(BaseCommand):
+            @property
+            def steps(self):
+                return [Step(self, unique_id="step_1", steps_back=1), Step(self, unique_id="step_2")]
+
+        telegram_settings = MagicMock(name="telegram_settings")
+        telegram_update = MagicMock(name="telegram_update")
+        telegram_update.callback_data = ""
+        telegram_update.is_message.return_value = True
+        telegram_update.is_command.return_value = False
+        telegram_settings.data = {}
+        command = DummyCommand(telegram_settings)
+        with patch.object(command, "get_callback_data") as fake_get_callback_data:
+            command.steps[0].get_callback_data(telegram_update)
+            fake_get_callback_data.assert_called_once_with(telegram_update.callback_data)
 
 
 class ExtraBotTests(SimpleTestCase):

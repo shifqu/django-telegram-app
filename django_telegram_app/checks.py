@@ -3,10 +3,10 @@
 from django.core.checks import Error, register
 from django.core.exceptions import ImproperlyConfigured
 
+from django_telegram_app import get_telegram_settings_model
 from django_telegram_app.bot import get_commands
 from django_telegram_app.conf import settings
 from django_telegram_app.models import AbstractTelegramSettings
-from django_telegram_app.resolver import get_telegram_settings_model
 
 
 @register()
