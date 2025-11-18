@@ -2,12 +2,15 @@
 django-telegram-app provides a base management command, `BaseTelegramCommand`, that makes it easy to run Telegram bot commands using Django’s `manage.py`.
 
 ## What BaseTelegramCommand does for you
-- **Activates the user’s preferred language** (with `settings.LANGUAGE_CODE` as a fallback) before running the command, and deactivates it afterward.
 - Provides a `should_run()` hook that returns a boolean.  
 This is helpful when a command is scheduled (e.g., daily via cron) but should only run on certain days.
+- Provides a `get_telegram_settings_filter()` hook to filter telegram settings.
+This is helpful when a command should only be run for specific telegram_settings.
+- Provides a `handle_command` hook to customize the update handling.
+This is useful if you'd like to customize the update that was sent or do extra things like activate a specific language, etc...
 
 ## How the command is executed
-When invoked, the management command runs once for each active user who has a TelegramSettings instance linked.
+When invoked, the management command runs once for each TelegramSettings instance, respecting the filter provided from `get_telegram_settings_filter()`.
 
 ## Tip: Avoid Naming Conflicts
 Since Django also uses a class named `Command` for management commands, it’s best to import your Telegram command under an alias:
@@ -30,7 +33,7 @@ from apps.myapp.telegrambot.commands.customcommand import Command as CustomComma
 class Command(BaseTelegramCommand):
     """Start the customcommand command."""
 
-    help = "Start the customcommand command to ask users yes or no."
+    help = "Start the customcommand command."
     command = CustomCommand
 
     def should_run(self):
