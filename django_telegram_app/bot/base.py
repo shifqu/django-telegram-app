@@ -30,7 +30,7 @@ class BaseCommand:
 
     def start(self, telegram_update: TelegramUpdate):
         """Start the command."""
-        logging.info(f"Starting {self.get_name()} for user {self.settings.user}")
+        logging.info(f"Starting {self.get_name()} for {self.settings}")
         self._clear_state()
         return self.steps[0].handle(telegram_update)
 

@@ -3,13 +3,20 @@
 from django.contrib import admin
 
 from django_telegram_app import get_telegram_settings_model
+from django_telegram_app.conf import settings
 from django_telegram_app.models import CallbackData, Message
+
+TelegramSettingModel = get_telegram_settings_model()
 
 
 class TelegramSettingInline(admin.TabularInline):
     """Represent a telegram setting inline in the admin."""
 
-    model = get_telegram_settings_model()
+    model = TelegramSettingModel
+
+
+class TelegramSettingsAdmin(admin.ModelAdmin):
+    """Represent the TelegramSettings admin."""
 
 
 class CallbackDataAdmin(admin.ModelAdmin):
@@ -50,3 +57,5 @@ class MessageAdmin(admin.ModelAdmin):
 
 admin.site.register(CallbackData, CallbackDataAdmin)
 admin.site.register(Message, MessageAdmin)
+if settings.REGISTER_DEFAULT_ADMIN:
+    admin.site.register(TelegramSettingModel, TelegramSettingsAdmin)
