@@ -4,7 +4,6 @@ from io import StringIO
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.core.management.base import CommandError
 
@@ -20,8 +19,7 @@ class ManagementCommandTests(TelegramBotTestCase):
     @classmethod
     def setUpTestData(cls):
         """Set up test data."""
-        cls.user = get_user_model().objects.create_user(username="dummyuser", password="dummypass")
-        cls.telegram_setting = get_telegram_settings_model().objects.create(user=cls.user, chat_id=123456789)
+        cls.telegram_setting = get_telegram_settings_model().objects.create(chat_id=123456789)
 
     def test_base_telegram_command_runs(self):
         """Test that the BaseTelegramCommand can be invoked without errors."""
@@ -48,33 +46,19 @@ class ManagementCommandTests(TelegramBotTestCase):
 
         with patch("tests.testapps.samplebot.management.commands.poll.Command.should_run", return_value=False):
             call_command("poll", force=False, stdout=out)
-            self.assertIn("Command '/poll' skipped as should_run returned False.", out.getvalue())
+            self.assertIn("Command '/poll' skipped as `should_run` returned False.", out.getvalue())
             call_command("poll", force=True, stdout=out)
-            self.assertIn(f"Started the command for {self.telegram_setting.user}.", out.getvalue())
+            self.assertIn(f"Started the command for {self.telegram_setting}.", out.getvalue())
 
         with patch("tests.testapps.samplebot.management.commands.poll.Command.should_run", return_value=True):
             call_command("poll", force=False, stdout=out)
-            self.assertIn(f"Started the command for {self.telegram_setting.user}.", out.getvalue())
+            self.assertIn(f"Started the command for {self.telegram_setting}.", out.getvalue())
             call_command("poll", force=True, stdout=out)
-            self.assertIn(f"Started the command for {self.telegram_setting.user}.", out.getvalue())
+            self.assertIn(f"Started the command for {self.telegram_setting}.", out.getvalue())
 
         self.telegram_setting.delete()
         call_command("poll", force=True, stdout=out)
-        self.assertIn("No Telegram-enabled users found. Nothing to do.", out.getvalue())
-
-    def test_get_user_language(self):
-        """Test that the get_user_language function retrieves the correct language code."""
-        from django.conf import settings
-
-        from django_telegram_app.management.base import get_user_language
-
-        user_no_lang = SimpleNamespace()
-        lang = get_user_language(user_no_lang)
-        self.assertEqual(lang, settings.LANGUAGE_CODE)
-
-        user_fr = SimpleNamespace(language="fr")
-        lang = get_user_language(user_fr)
-        self.assertEqual(lang, "fr")
+        self.assertIn("No Telegram-settings found for the given filter. Nothing to do.", out.getvalue())
 
     def test_set_webhook_command(self):
         """Test that the set_webhook command runs without errors."""

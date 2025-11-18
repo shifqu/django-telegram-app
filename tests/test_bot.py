@@ -4,7 +4,6 @@ import uuid
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
-from django.contrib.auth import get_user_model
 from django.test import SimpleTestCase
 
 from django_telegram_app import get_telegram_settings_model
@@ -21,8 +20,7 @@ class BotTests(TelegramBotTestCase):
     @classmethod
     def setUpTestData(cls):
         """Set up test data."""
-        cls.user = get_user_model().objects.create_user(username="dummyuser", password="dummypass")
-        cls.telegram_setting = get_telegram_settings_model().objects.create(user=cls.user, chat_id=123456789)
+        cls.telegram_setting = get_telegram_settings_model().objects.create(chat_id=123456789)
 
     def test_get_commands_returns_empty_dict_when_not_configured(self):
         """Test that get_commands returns an empty dict when settings are not configured."""
@@ -225,6 +223,21 @@ class BotTests(TelegramBotTestCase):
         with patch.object(command, "get_callback_data") as fake_get_callback_data:
             command.steps[0].get_callback_data(telegram_update)
             fake_get_callback_data.assert_called_once_with(telegram_update.callback_data)
+
+    def test_get_or_create_telegram_settings_creates_if_allowed(self):
+        """Test that get_or_create_telegram_settings creates settings if allowed."""
+        from django_telegram_app.bot.bot import get_or_create_telegram_settings
+        from django_telegram_app.conf import settings
+
+        telegram_update = SimpleNamespace(chat_id=987654321)
+        with patch.object(settings, "ALLOW_SETTINGS_CREATION_FROM_UPDATES", False):
+            with self.assertRaises(get_telegram_settings_model().DoesNotExist):
+                get_or_create_telegram_settings(telegram_update)  # type: ignore[reportArgumentType]
+
+        with patch.object(settings, "ALLOW_SETTINGS_CREATION_FROM_UPDATES", True):
+            telegram_settings = get_or_create_telegram_settings(telegram_update)  # type: ignore[reportArgumentType]
+            self.assertIsNotNone(telegram_settings)
+            self.assertEqual(telegram_settings.chat_id, 987654321)
 
 
 class ExtraBotTests(SimpleTestCase):

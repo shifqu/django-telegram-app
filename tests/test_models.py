@@ -1,6 +1,5 @@
 """Tests for the models package."""
 
-from django.contrib.auth import get_user_model
 from django.test import TestCase
 
 from django_telegram_app.models import CallbackData, Message, TelegramSettings
@@ -36,9 +35,8 @@ class ModelsTests(TestCase):
 
     def test_telegram_settings_str(self):
         """Test that the __str__ method of TelegramSettings works as expected."""
-        user = get_user_model().objects.create_user(username="testuser")
-        settings = TelegramSettings(user=user, chat_id="67890")
-        self.assertEqual(str(settings), "testuser (67890)")
+        settings = TelegramSettings(chat_id="67890")
+        self.assertEqual(str(settings), "Chat 67890")
 
     def test_callback_data_str(self):
         """Test that the __str__ method of CallbackData works as expected."""
