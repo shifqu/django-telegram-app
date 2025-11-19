@@ -48,7 +48,6 @@ TELEGRAM = {
     "BOT_URL": "https://api.telegram.org/bot123:abc/",
     "ROOT_URL": "telegram/",
     "WEBHOOK_URL": "webhook",
-    "USER_LANGUAGE_ATTRS": ("language", "lang", "preferred_language"),
     "WEBHOOK_TOKEN": "test-webhook-token",
 }
 

@@ -19,7 +19,7 @@ Detailed documentation is in the [`docs/`](https://github.com/shifqu/django-tele
 
 - ✅ Command-based bot architecture with step-based flow
 - ✅ Swappable `TelegramSettings` model
-- ✅ Inline admin integration for linking Telegram settings to users
+- ✅ Optional admin integration for Telegram settings
 - ✅ Extensible: add commands per app via auto-discovery
 - ✅ Built-in system checks for misconfiguration
 - ✅ Django ORM integration (no direct API handling required)
@@ -55,21 +55,10 @@ Detailed documentation is in the [`docs/`](https://github.com/shifqu/django-tele
 
 3. Create your own commands in each app under `{appname}/telegrambot/commands/`. Refer to the documentation for more details on how to write custom commands.
 
-4. Add the provided telegramsettings inline to your user-model like this:
-    ```python
-    # user/admin.py
-    from django_telegram_app.admin import TelegramSettingInline
-    ...
-    class CustomUserAdmin(UserAdmin):
-        ...
-        inlines = [TelegramSettingInline]
-        # or add it to an existing entry
-    ```
-
 5. Configure the telegram settings. Refer to the documentation for all possible settings. 
 Minimal configuration is like this:
     ```python
-    # project/settings.py
+    # mysite/settings.py
     ...
     TELEGRAM = {
         "BOT_URL": "https://api.telegram.org/bot123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11/"
@@ -81,7 +70,7 @@ Minimal configuration is like this:
 
 7. Run `python manage.py setwebhook` to set the url on which you would like to receive telegram updates.
 
-8. Start the development server and visit the admin to edit users and add/complete TelegramSettings there.
+8. Start the development server and visit the admin to edit/add TelegramSettings there.
 
 ## License
 

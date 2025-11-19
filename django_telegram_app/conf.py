@@ -5,8 +5,9 @@ from django.conf import settings as django_settings
 DEFAULTS = {
     "ROOT_URL": "telegram/",
     "WEBHOOK_URL": "webhook",
-    "USER_LANGUAGE_ATTRS": ("language", "lang", "preferred_language"),
     "WEBHOOK_TOKEN": "",
+    "ALLOW_SETTINGS_CREATION_FROM_UPDATES": False,
+    "REGISTER_DEFAULT_ADMIN": True,
 }
 REQUIRED = ["BOT_URL"]
 
@@ -16,8 +17,8 @@ class AppSettings:
 
     def __init__(self):
         """Initialize the settings."""
-        user_settings = getattr(django_settings, "TELEGRAM", {}) or {}
-        merged_settings = {**DEFAULTS, **user_settings}
+        app_settings = getattr(django_settings, "TELEGRAM", {}) or {}
+        merged_settings = {**DEFAULTS, **app_settings}
         self._settings = merged_settings
 
     def __getattr__(self, name):

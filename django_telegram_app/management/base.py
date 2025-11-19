@@ -4,18 +4,22 @@ Note:
 This module's command-class does not create an actual CLI command, but can be used by actual commands.
 """
 
-from django.conf import settings
 from django.core.management.base import BaseCommand
-from django.utils.translation import override
 
 from django_telegram_app import get_telegram_settings_model
 from django_telegram_app.bot.base import BaseCommand as BaseBotCommand
 from django_telegram_app.bot.bot import handle_update
-from django_telegram_app.conf import settings as app_settings
+from django_telegram_app.models import AbstractTelegramSettings
 
 
 class BaseTelegramCommand(BaseCommand):
-    """Base command class to start Telegram bot commands."""
+    """Base command class to start Telegram bot commands.
+
+    Subclasses can override:
+        - the `should_run` method to determine if the command should run.
+        - the `get_telegram_settings_filter` method to filter telegram settings.
+        - the `handle_command` method to customize the update handling
+    """
 
     command: type[BaseBotCommand] | None = None
 
@@ -31,43 +35,47 @@ class BaseTelegramCommand(BaseCommand):
     def handle(self, *_args, **options):
         """Start the configured telegram command.
 
-        Note:
-        The chat_id is configured on the user as a TelegramSetting.
-        A fake update is created with a message containing the command, this is not persisted.
+        This method should not be overridden by subclasses.
+        Subclasses can override:
+        - the `should_run` method to determine if the command should run.
+        - the `get_telegram_settings_filter` method to filter telegram settings.
+        - the `handle_command` method to customize the update handling
         """
         if not self.command:
             raise ValueError("The attribute `command` must be set.")
         command_text = self.command.get_command_string()
 
         if not options["force"] and not self.should_run():
-            self.stdout.write(self.style.NOTICE(f"Command '{command_text}' skipped as should_run returned False."))
+            self.stdout.write(self.style.NOTICE(f"Command '{command_text}' skipped as `should_run` returned False."))
             return
 
-        for telegram_settings in get_telegram_settings_model().objects.filter(user__is_active=True):
-            user_language = get_user_language(telegram_settings.user)
-            with override(user_language, deactivate=True):
-                update = {"message": {"chat": {"id": telegram_settings.chat_id}, "text": command_text}}
-                handle_update(update=update)
-            self.stdout.write(self.style.SUCCESS(f"Started the command for {telegram_settings.user}."))
+        telegram_settings_filter = self.get_telegram_settings_filter()
+        for telegram_settings in get_telegram_settings_model().objects.filter(**telegram_settings_filter):
+            self.handle_command(telegram_settings, command_text)
+            self.stdout.write(self.style.SUCCESS(f"Started the command for {telegram_settings}."))
         else:
-            self.stdout.write(self.style.NOTICE("No Telegram-enabled users found. Nothing to do."))
+            self.stdout.write(self.style.NOTICE("No Telegram-settings found for the given filter. Nothing to do."))
 
     def should_run(self) -> bool:
         """Determine if the command should run."""
         return True
 
+    def get_telegram_settings_filter(self):
+        """Get the filter to apply when retrieving telegram settings.
 
-def get_user_language(user) -> str:
-    """Get the language code for a user.
+        Can be overridden by subclasses to filter telegram settings.
+        By default, all telegram settings are returned.
+        """
+        return {}
 
-    Look for various attributes on the user model to determine the preferred language.
-    If no language attribute is found, the default LANGUAGE_CODE from settings is returned.
+    def handle_command(self, telegram_settings: AbstractTelegramSettings, command_text: str):
+        """Construct a telegram update and handle it.
 
-    The attribute names to look for can be configured in the TELEGRAM.USER_LANGUAGE_ATTRS setting.
-    """
-    for attr in app_settings.USER_LANGUAGE_ATTRS:
-        value = getattr(user, attr, "")
-        if value:
-            return value
+        Subclasses are encouraged to override this method to customize the update handling.
+        (e.g., to add custom data to the update, to localize, etc.)
 
-    return settings.LANGUAGE_CODE
+        Note:
+        A minimal update is created with a message containing the command, this update is not persisted.
+        """
+        update = {"message": {"chat": {"id": telegram_settings.chat_id}, "text": command_text}}
+        handle_update(update=update, telegram_settings=telegram_settings)

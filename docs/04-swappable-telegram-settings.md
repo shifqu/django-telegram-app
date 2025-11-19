@@ -1,25 +1,39 @@
 # 🔧 Using a Custom TelegramSettings Model
 
 By default, the library ships with its own `TelegramSettings` model.
-If your project needs additional fields (for example, `reminder_text`, preferences or feature flags), you can replace it entirely with your own model.
+If your project needs additional fields (for example, `user`, `reminder_text`, preferences or feature flags), you can replace it entirely with your own model.
 
 ## Why use a custom TelegramSettings model instead of creating a completely separate model?
-Because the library is designed to treat TelegramSettings as the source of all Telegram-related configuration for a user. When you swap the model instead of creating a separate one, you get several important advantages:
+Because the library is designed to treat TelegramSettings as the source of all Telegram-related configuration. When you swap the model instead of creating a separate one, you get several important advantages:
 - **Automatic availability in commands and steps**  
-    The TelegramSettings instance for the current user is loaded once when a command is instantiated.
+    The TelegramSettings instance is loaded once when a command is instantiated.
     Every command automatically receives it as `self.settings` and every step receives the command as `self.command`, so your custom fields are available everywhere with no extra code.
 - **No repeated queries or imports**  
     With a separate model, you would have to:
     - import it in every command and step
-    - manually fetch it (`MyExtraSettings.objects.get(user=...)`)
+    - manually fetch it (`MyExtraSettings.objects.get(...)`)
     - handle missing records or defaults yourself.
 
     *Swapping eliminates all of that boilerplate.*
 - **Cleaner, single source of truth**  
-    All Telegram-related settings—default ones and your custom ones—live in one model tied directly to the user.
+    All Telegram-related settings —default ones and your custom ones— live in one model tied directly to the commands.
 - **Automatically integrated into the Django admin**  
-The library registers TelegramSettings as an inline on the User admin page.  
+The library registers `TelegramSettings` as a `ModelAdmin` in Django-admin.  
 When you swap the model, your custom version automatically appears there too, making it easy to edit all Telegram settings in one place without extra admin configuration.
+To disable registering this `ModelAdmin`, set the option `REGISTER_DEFAULT_ADMIN` to `False`
+- **Inline admin integrations to link to other models**
+An Inline is also provided to enable users to link and modify telegram settings to another model.
+Add the provided telegramsettings inline to another model like this:
+    ```python
+    # myapp/admin.py
+    ...
+    from django_telegram_app.admin import TelegramSettingInline
+    ...
+    class MyAppAdmin(ModelAdmin):
+        ...
+        inlines = [TelegramSettingInline]
+        # or add it to an existing entry
+    ```
 
 ## Create the custom model:
 - Subclass django_telegram_app.AbstractTelegramSettings and add any fields your bot needs (e.g., extra_field).

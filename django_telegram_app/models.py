@@ -1,12 +1,16 @@
 """Telegram models."""
 
+from __future__ import annotations
+
 import uuid
 from typing import TYPE_CHECKING, Any
 
-from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+
+if TYPE_CHECKING:
+    from django_telegram_app.bot.base import TelegramUpdate
 
 
 class Message(models.Model):
@@ -51,12 +55,8 @@ class AbstractTelegramSettings(models.Model):
     """Represent telegram settings."""
 
     if TYPE_CHECKING:
-        from django.contrib.auth.base_user import AbstractBaseUser
-
-        user: models.OneToOneField[AbstractBaseUser]
         data: models.JSONField[dict[str, str]]
 
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name=_("user"))
     chat_id = models.IntegerField(verbose_name=_("chat id"), unique=True)
     data = models.JSONField(verbose_name=_("data"), default=dict, blank=True, encoder=DjangoJSONEncoder)
     updated_at = models.DateTimeField(verbose_name=_("updated at"), auto_now=True)
@@ -66,9 +66,17 @@ class AbstractTelegramSettings(models.Model):
 
         abstract = True
 
+    @classmethod
+    def create_from_telegram_update(cls, telegram_update: TelegramUpdate):
+        """Create telegram settings from a telegram update.
+
+        Subclasses can override this method to customize the creation process.
+        """
+        return cls.objects.create(chat_id=telegram_update.chat_id)
+
     def __str__(self):
         """Return a string representation of the telegram setting."""
-        return f"{self.user.get_username()} ({self.chat_id})"
+        return f"Chat {self.chat_id}"
 
 
 class TelegramSettings(AbstractTelegramSettings):
@@ -94,7 +102,11 @@ class CallbackData(models.Model):
     token = models.UUIDField(verbose_name=_("token"), default=uuid.uuid4, unique=True, db_index=True)
     command = models.CharField(verbose_name=_("command"), max_length=255)
     step = models.CharField(verbose_name=_("step"), max_length=255)
-    action = models.CharField(verbose_name=_("action"), max_length=99, help_text=_("Name of a function on the command"))
+    action = models.CharField(
+        verbose_name=_("action"),
+        max_length=99,
+        help_text=_("Name of a function on the command"),
+    )
     data = models.JSONField(verbose_name=_("callback data"), default=dict, encoder=DjangoJSONEncoder)
     created_at = models.DateTimeField(verbose_name=_("created at"), auto_now_add=True)
 
