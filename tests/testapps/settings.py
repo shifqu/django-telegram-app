@@ -50,5 +50,3 @@ TELEGRAM = {
     "WEBHOOK_URL": "webhook",
     "WEBHOOK_TOKEN": "test-webhook-token",
 }
-
-DOMAIN_NAME = "https://127.0.0.1:8000"
