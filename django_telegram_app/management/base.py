@@ -13,7 +13,13 @@ from django_telegram_app.models import AbstractTelegramSettings
 
 
 class BaseTelegramCommand(BaseCommand):
-    """Base command class to start Telegram bot commands."""
+    """Base command class to start Telegram bot commands.
+
+    Subclasses can override:
+        - the `should_run` method to determine if the command should run.
+        - the `get_telegram_settings_filter` method to filter telegram settings.
+        - the `handle_command` method to customize the update handling
+    """
 
     command: type[BaseBotCommand] | None = None
 

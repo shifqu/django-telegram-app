@@ -18,6 +18,30 @@ Since Django also uses a class named `Command` for management commands, it’s b
 from apps.myapp.telegrambot.commands.customcommand import Command as CustomCommand
 ```
 
+## Tip: Create a custom base management command for repeated logic
+When using a swapped TelegramSettings model, you may find yourself overriding get_telegram_settings_filter() and related logic in every management command. To avoid duplication, define your own project-specific base command and subclass it throughout your project.
+For example:
+```python
+...
+class CustomBaseTelegramCommand(BaseTelegramCommand):
+    """Base command for telegram management commands."""
+
+    def get_telegram_settings_filter(self):
+        """Filter to get only active users."""
+        return {"user__is_active": True}
+
+    def handle_command(self, telegram_settings: AbstractTelegramSettings, command_text: str):
+        """Handle the update in the current user's language."""
+        assert isinstance(telegram_settings, CustomTelegramSettings)
+        assert isinstance(telegram_settings.user, CustomUser)
+
+        update = {"message": {"chat": {"id": telegram_settings.chat_id}, "text": command_text}}
+        with override(telegram_settings.user.language):
+            handle_update(update, telegram_settings)
+
+```
+Then, in your actual management commands, subclass `CustomBaseTelegramCommand` instead of `BaseTelegramCommand` to keep your code clean and consistent.
+
 ## Example: custom management command
 ```python
 # apps/myapp/management/commands/customcommand.py
@@ -43,3 +67,5 @@ class Command(BaseTelegramCommand):
         return tomorrow.day == 1
 
 ```
+
+## Example custom base management command
