@@ -103,7 +103,7 @@ class TelegramStep(Step, ABC):
 - `Pylint`/`mypy`/`IDE tools` will not complain about missing abstract methods,
 
 ## 🎉 Result
-With this tiny setup:
+With this setup:
 ```python
 # apps/myapp/telegrambot/commands/concrete.py
 class Command(TelegramCommand):

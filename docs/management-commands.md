@@ -67,5 +67,3 @@ class Command(BaseTelegramCommand):
         return tomorrow.day == 1
 
 ```
-
-## Example custom base management command

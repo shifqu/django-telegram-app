@@ -27,6 +27,11 @@ theme:
     - search.suggest
     - toc.follow
 
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+
 repo_url: https://github.com/shifqu/django-telegram-app
 repo_name: GitHub
 
@@ -40,8 +45,9 @@ plugins:
 
 nav:
   - Home: index.md
-  - Configuration: 01-configuration.md
-  - Bot Commands: 02-bot-commands.md
-  - Management Commands: 03-management-commands.md
-  - Swappable TelegramSetting: 04-swappable-telegram-settings.md
+  - Getting Started: getting-started.md
+  - Configuration: configuration.md
+  - Bot Commands: bot-commands.md
+  - Management Commands: management-commands.md
+  - Swappable TelegramSetting: swappable-telegram-settings.md
   - API Reference: api.md

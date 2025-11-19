@@ -1,7 +1,20 @@
-# Writing a custom bot command
-Bot commands are discovered per app under a telegrambot/commands/ package.
+# 🤖 Writing a custom bot command
 
-A botcommand is a subclass of `django_telegram_app.base.BaseCommand` and should provide the property `steps` which returns a list of `Step` subclasses.
+Each Django app may define telegram bot commands under:
+
+```
+myapp/
+    __init__.py
+    telegrambot/
+        __init__.py
+        commands/
+            __init__.py
+            _private.py
+            roll.py
+```
+In this example, the `roll` command will be made available to any project that includes the `myapp` application in `INSTALLED_APPS`.  
+The `_private.py` module will not be available as a management command.  
+The `roll.py` module has a few requirements – it must define a class `Command` that extends `django_telegram_app.base.BaseCommand` or a subclass of it and should provide the property `steps` which returns a list of `Step` subclasses.
 
 Usually the first thing a step does is `self.get_callback_data`.
 

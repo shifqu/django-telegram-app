@@ -1,5 +1,4 @@
 ---
-title: ""
 hide:
   - title
 ---
@@ -39,43 +38,10 @@ Django Telegram App
 - Python **3.10+**
 - Django **5.2+**
 
-## Quick start
+## Getting started
 
-1. Install the package
-        
-        pip install django-telegram-app
-
-1. Add "django_telegram_app" to your INSTALLED_APPS setting like this:
-    
-        INSTALLED_APPS = [
-            ...,
-            "django_telegram_app",
-        ]
-
-2. Include the telegram URLconf in your project urls.py like this:
-
-        ...
-        from django_telegram_app.conf import settings as telegram_app_settings
-        ...
-        path(telegram_app_settings.ROOT_URL, include("django_telegram_app.urls")),
-
-3. Create your own commands in each app under `{appname}/telegrambot/commands/`. Refer to the documentation for more details on how to write custom commands.
-
-5. Configure the telegram settings. Refer to the documentation for all possible settings. 
-Minimal configuration is like this:
-
-        # mysite/settings.py
-        ...
-        TELEGRAM = {
-            "BOT_URL": "https://api.telegram.org/bot123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11/"
-        }
-        ...
-
-6. Run `python manage.py migrate` to create the models.
-
-7. Run `python manage.py setwebhook` to set the url on which you would like to receive telegram updates.
-
-8. Start the development server and visit the admin to edit/add TelegramSettings there.
+To set up your bot, follow the step-by-step guide in  
+➡️ [Getting started](getting-started.md)
 
 ## License
 
