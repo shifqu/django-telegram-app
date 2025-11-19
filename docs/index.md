@@ -1,3 +1,8 @@
+---
+title: ""
+hide:
+  - title
+---
 <h1 align="center">
 Django Telegram App
 </h1>

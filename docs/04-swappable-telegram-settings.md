@@ -5,6 +5,7 @@ If your project needs additional fields (for example, `user`, `reminder_text`, p
 
 ## Why use a custom TelegramSettings model instead of creating a completely separate model?
 Because the library is designed to treat TelegramSettings as the source of all Telegram-related configuration. When you swap the model instead of creating a separate one, you get several important advantages:
+
 - **Automatic availability in commands and steps**  
     The TelegramSettings instance is loaded once when a command is instantiated.
     Every command automatically receives it as `self.settings` and every step receives the command as `self.command`, so your custom fields are available everywhere with no extra code.
@@ -15,6 +16,7 @@ Because the library is designed to treat TelegramSettings as the source of all T
     - handle missing records or defaults yourself.
 
     *Swapping eliminates all of that boilerplate.*
+
 - **Cleaner, single source of truth**  
     All Telegram-related settings —default ones and your custom ones— live in one model tied directly to the commands.
 - **Automatically integrated into the Django admin**  
@@ -24,44 +26,45 @@ To disable registering this `ModelAdmin`, set the option `REGISTER_DEFAULT_ADMIN
 - **Inline admin integrations to link to other models**
 An Inline is also provided to enable users to link and modify telegram settings to another model.
 Add the provided telegramsettings inline to another model like this:
-    ```python
-    # myapp/admin.py
+```python
+# myapp/admin.py
+...
+from django_telegram_app.admin import TelegramSettingInline
+...
+class MyAppAdmin(ModelAdmin):
     ...
-    from django_telegram_app.admin import TelegramSettingInline
-    ...
-    class MyAppAdmin(ModelAdmin):
-        ...
-        inlines = [TelegramSettingInline]
-        # or add it to an existing entry
-    ```
+    inlines = [TelegramSettingInline]
+    # or add it to an existing entry
+```
 
 ## Create the custom model:
 - Subclass django_telegram_app.AbstractTelegramSettings and add any fields your bot needs (e.g., extra_field).
-    ```python
-    # apps/myapp/models.py
-    """Example custom telegram settings."""
+```python
+# apps/myapp/models.py
+"""Example custom telegram settings."""
 
-    from django.db import models
+from django.db import models
 
-    from django_telegram_app.models import AbstractTelegramSettings
+from django_telegram_app.models import AbstractTelegramSettings
 
 
-    class CustomTelegramSettings(AbstractTelegramSettings):
-        """Custom Telegram settings model for testing."""
+class CustomTelegramSettings(AbstractTelegramSettings):
+    """Custom Telegram settings model for testing."""
 
-        extra_field = models.CharField(max_length=100, default="")
-    ```
+    extra_field = models.CharField(max_length=100, default="")
+```
 - Point Django to your model via the TELEGRAM_SETTINGS_MODEL setting.
-    ```python
-    # mysite/settings.py
-    ...
-    TELEGRAM_SETTINGS_MODEL = "myapp.TelegramSettings"
-    ...
+```python
+# mysite/settings.py
+...
+TELEGRAM_SETTINGS_MODEL = "myapp.TelegramSettings"
+...
+```
 - Run migrations as usual.
-    ```bash
-    python manage.py makemigrations
-    python manage.py migrate
-    ```
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
 After these steps, the library will automatically use your model whenever it loads Telegram settings.
 
 ## 🛠 Adding Typing Support for Your Custom Model
