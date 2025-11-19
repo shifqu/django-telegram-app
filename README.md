@@ -2,7 +2,7 @@
 Django Telegram App
 </h1>
 <p align="center">
-  <img src="assets/logo.png" alt="django-telegram-app logo" width="480">
+  <img src="docs/assets/logo.png" alt="django-telegram-app logo" width="480">
 </p>
 <p align="center">
 <i>A Django app to integrate Telegram bots into your project.</i>
