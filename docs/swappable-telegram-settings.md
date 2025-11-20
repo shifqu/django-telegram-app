@@ -26,48 +26,42 @@ To disable registering this `ModelAdmin`, set the option `REGISTER_DEFAULT_ADMIN
 - **Inline admin integrations to link to other models**
 An Inline is also provided to enable users to link and modify telegram settings to another model.
 Add the provided telegramsettings inline to another model like this:
-```python
-# myapp/admin.py
-...
+```python title="myapp/admin.py"
 from django_telegram_app.admin import TelegramSettingInline
-...
+
+
 class MyAppAdmin(ModelAdmin):
-    ...
-    inlines = [TelegramSettingInline]
-    # or add it to an existing entry
+    inlines = [TelegramSettingInline] # or add it to an existing entry
+
 ```
 
-## Create the custom model:
-- Subclass django_telegram_app.AbstractTelegramSettings and add any fields your bot needs (e.g., extra_field).
-```python
-# apps/myapp/models.py
-"""Example custom telegram settings."""
+---
 
+## Create the custom model
+- Subclass django_telegram_app.AbstractTelegramSettings and add any fields your bot needs (e.g., extra_field).
+```python title="apps/myapp/models.py"
 from django.db import models
 
 from django_telegram_app.models import AbstractTelegramSettings
 
 
 class CustomTelegramSettings(AbstractTelegramSettings):
-    """Custom Telegram settings model for testing."""
-
     extra_field = models.CharField(max_length=100, default="")
 ```
 - Point Django to your model via the TELEGRAM_SETTINGS_MODEL setting.
-```python
-# mysite/settings.py
-...
+```python title="mysite/settings.py"
 TELEGRAM_SETTINGS_MODEL = "myapp.TelegramSettings"
-...
 ```
 - Run migrations as usual.
-```bash
+```text
 python manage.py makemigrations
 python manage.py migrate
 ```
 After these steps, the library will automatically use your model whenever it loads Telegram settings.
 
-## 🛠 Adding Typing Support for Your Custom Model
+---
+
+## Adding Typing Support for Your Custom Model
 
 Django’s model-swapping works seamlessly at runtime, but type checkers only know about the abstract base class unless you tell them otherwise.
 To enable full typing support—autocomplete, type checking, and access to your custom fields—you can define a simple *project-local* base class for your Telegram commands.
@@ -75,13 +69,12 @@ To enable full typing support—autocomplete, type checking, and access to your 
 This keeps your application code clean and avoids having to repeat type hints or generics in every command.
 
 Below is an example pattern you can copy into your project:
-```python
-# apps/myapp/telegrambot/base.py
+```python title="apps/myapp/telegrambot/base.py"
 from abc import ABC
 
 from django_telegram_app.bot.base import BaseCommand, Step
 
-from apps.myapp.models import TelegramSettings
+from myapp.models import TelegramSettings
 
 
 class TelegramCommand(BaseCommand, ABC):
@@ -96,16 +89,17 @@ class TelegramStep(Step, ABC):
     command: TelegramCommand
 
 ```
-### 💡 Why the ABC?
-`BaseCommand` and `Step` contain abstract methods that subclasses must implement
-(e.g., .handle() or .steps). By inheriting from `ABC`, we are explicitly marking these project-local bases as **abstract**, meaning:
-- they should not be instantiated directly
-- `Pylint`/`mypy`/`IDE tools` will not complain about missing abstract methods,
+!!! note "Why the ABC?"
+    `BaseCommand` and `Step` contain abstract methods that subclasses must implement
+    (e.g., .handle() or .steps). By inheriting from `ABC`, we are explicitly marking these project-local bases as **abstract**, meaning:
+    - they should not be instantiated directly
+    - `Pylint`/`mypy`/`IDE tools` will not complain about missing abstract methods,
 
-## 🎉 Result
+---
+
+## Result
 With this setup:
-```python
-# apps/myapp/telegrambot/commands/concrete.py
+```python title="myapp/telegrambot/commands/concrete.py"
 class Command(TelegramCommand):
     ...
 

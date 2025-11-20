@@ -1,7 +1,7 @@
 """Base command module to start telegram commands.
 
 Note:
-This module's command-class does not create an actual CLI command, but can be used by actual commands.
+    This module's command-class does not create an actual CLI command, but can be used by actual commands.
 """
 
 from django.core.management.base import BaseCommand
@@ -36,10 +36,11 @@ class BaseTelegramCommand(BaseCommand):
         """Start the configured telegram command.
 
         This method should not be overridden by subclasses.
+
         Subclasses can override:
-        - the `should_run` method to determine if the command should run.
-        - the `get_telegram_settings_filter` method to filter telegram settings.
-        - the `handle_command` method to customize the update handling
+            - the `should_run` method to determine if the command should run.
+            - the `get_telegram_settings_filter` method to filter telegram settings.
+            - the `handle_command` method to customize the update handling
         """
         if not self.command:
             raise ValueError("The attribute `command` must be set.")
@@ -75,7 +76,7 @@ class BaseTelegramCommand(BaseCommand):
         (e.g., to add custom data to the update, to localize, etc.)
 
         Note:
-        A minimal update is created with a message containing the command, this update is not persisted.
+            A minimal update is created with a message containing the command, this update is not persisted.
         """
         update = {"message": {"chat": {"id": telegram_settings.chat_id}, "text": command_text}}
         handle_update(update=update, telegram_settings=telegram_settings)

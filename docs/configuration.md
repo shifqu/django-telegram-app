@@ -1,7 +1,9 @@
-# ⚙️ Configuring the Telegram bot
+# 🛠 Configuring the Telegram bot
 
 All configuration for **django-telegram-app** is provided inside a single `TELEGRAM` dictionary in your Django settings.
 Only one setting (`TELEGRAM_SETTINGS_MODEL`) is defined outside this dictionary, as required by Django’s swappable-model system.
+
+---
 
 ## Required Settings
 Here’s a list of required settings.
@@ -10,11 +12,13 @@ Here’s a list of required settings.
 
 The full URL to your Telegram bot, including the bot token. Used for all outbound requests to the Telegram Bot API. Example:
 
-```python
+```python title="mysite/settings.py"
 TELEGRAM = {
     "BOT_URL": "https://api.telegram.org/bot123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11/"
 }
 ```
+
+---
 
 ## Optional Settings
 Here’s a list of optional settings and their default values.
@@ -24,7 +28,7 @@ Default: `"telegram/"`
 
 The root URL prefix under which all Telegram-related views are registered. Used in your project's `urls.py` and by the `setwebhook` command to construct the webhook endpoint. Example:
 
-```python
+```python title="mysite/settings.py"
 TELEGRAM = {
     "ROOT_URL": "bot/"
 }
@@ -35,7 +39,7 @@ Default: `"webhook"`
 
 The final segment of the webhook URL path. Customize to make the webhook endpoint less predictable to malicious users. Example:
 
-```python
+```python title="mysite/settings.py"
 TELEGRAM = {
     "WEBHOOK_URL": "secret-hook-XYZ"
 }
@@ -46,7 +50,7 @@ Default: `""` (empty string)
 
 Secret token that Telegram must include in the `X-Telegram-Bot-Api-Secret-Token` header when sending updates to your webhook. If empty, no token is expected or configured by `setwebhook`. Example:
 
-```python
+```python title="mysite/settings.py"
 TELEGRAM = {
     "WEBHOOK_TOKEN": "s3cr3t-t0ken-1234"
 }
@@ -57,7 +61,7 @@ Default: `False` (bool)
 
 Allow the app to automatically create a TelegramSettings entry when a new chat contacts the bot. Example:
 
-```python
+```python title="mysite/settings.py"
 TELEGRAM = {
     "ALLOW_SETTINGS_CREATION_FROM_UPDATES": True
 }
@@ -68,7 +72,7 @@ Default: `True` (bool)
 
 Controls whether the default Django admin for the TelegramSettings model is automatically registered. Example:
 
-```python
+```python title="mysite/settings.py"
 TELEGRAM = {
     "REGISTER_DEFAULT_ADMIN": False
 }
@@ -79,16 +83,17 @@ Default: "django_telegram_app.TelegramSettings"
 
 Path to your swappable `TelegramSettings` model. Must subclass `AbstractTelegramSettings`. Example:
 
-```python
+```python title="mysite/settings.py"
 TELEGRAM_SETTINGS_MODEL = "myapp.CustomTelegramSettings"
 ```
 
 !!! note
     This is a root setting and should **not** be included in the TELEGRAM dict.
 
+---
+
 ## Full example configuration
-```python
-# settings.py
+```python title="mysite/settings.py"
 TELEGRAM = {
     "BOT_URL": "https://api.telegram.org/bot123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11/",
     "ROOT_URL": "bot/",
@@ -101,11 +106,13 @@ TELEGRAM = {
 TELEGRAM_SETTINGS_MODEL = "myapp.TelegramSettings"
 ```
 
-## 🧪 Accessing settings in your project
+---
+
+## Accessing settings in your project
 
 Inside your own project code, keep using Django’s standard settings object:
 
-```python
+```python title="mysite/settings.py"
 from django.conf import settings
 
 if settings.DEBUG:
@@ -114,7 +121,7 @@ if settings.DEBUG:
 
 **django-telegram-app** only reads:
 
-```python
+```python title="mysite/settings.py"
 TELEGRAM
 TELEGRAM_SETTINGS_MODEL
 ```
@@ -122,7 +129,7 @@ TELEGRAM_SETTINGS_MODEL
 It does not replace or wrap django.conf.settings for general Django
 configuration. Should you require telegram specific settings (in `mysite/urls.py` for example), you can use the provided settings object.
 
-```python
+```python title="mysite/settings.py"
 from django_telegram_app.conf import settings as telegram_settings
 
 print(telegram_settings.BOT_URL)
