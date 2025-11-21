@@ -3,7 +3,7 @@
 </h1>
 
 <p align="center">
-  <img src="docs/assets/banner.png" alt="django-telegram-app logo" width="480">
+  <img src="assets/banner.png" alt="django-telegram-app logo" width="480">
 </p>
 
 <p align="center">
@@ -23,7 +23,7 @@
 
 ---
 
-**Documentation**: [https://shifqu.github.io/django-telegram-app/](https://shifqu.github.io/django-telegram-app/)
+**Documentation**: [https://shifqu.github.io/django-telegram-app/](index.md)
 
 **Source code**: [https://github.com/shifqu/django-telegram-app/](https://github.com/shifqu/django-telegram-app/)
 
@@ -47,7 +47,7 @@
 ## Getting started
 
 To set up your bot, follow the step-by-step guide in  
-➡️ [Getting started](https://shifqu.github.io/django-telegram-app/getting-started)
+➡️ [Getting started](getting-started.md)
 
 ## Support
 

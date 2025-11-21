@@ -1,7 +1,6 @@
 """Tests for the management package."""
 
 from io import StringIO
-from types import SimpleNamespace
 from unittest.mock import patch
 
 from django.core.management import call_command
@@ -67,7 +66,7 @@ class ManagementCommandTests(TelegramBotTestCase):
         with patch(f"{SETWEBHOOK_PATH}.requests.post") as mock_post:
             mock_post.return_value.status_code = 200
             mock_post.return_value.json.return_value = {"ok": True, "result": True}
-            call_command("setwebhook", stdout=out)
+            call_command("setwebhook", "https://example.com", stdout=out)
         self.assertIn("Successfully set webhook to", out.getvalue())
 
     def test_set_webhook_command_no_token(self):
@@ -78,7 +77,7 @@ class ManagementCommandTests(TelegramBotTestCase):
             with patch(f"{SETWEBHOOK_PATH}.app_settings.WEBHOOK_TOKEN", ""):
                 mock_post.return_value.status_code = 200
                 mock_post.return_value.json.return_value = {"ok": True, "result": True}
-                call_command("setwebhook", stdout=out)
+                call_command("setwebhook", "https://example.com", stdout=out)
         self.assertIn("Successfully set webhook to", out.getvalue())
 
     def test_set_webhook_command_failure(self):
@@ -90,6 +89,6 @@ class ManagementCommandTests(TelegramBotTestCase):
             mock_post.return_value.status_code = 200
             mock_post.return_value.json.return_value = {"ok": False, "description": "Invalid URL"}
             with self.assertRaises(CommandError, msg="Failed to set webhook to"):
-                call_command("setwebhook", stdout=out, stderr=err)
+                call_command("setwebhook", "https://example.com", stdout=out, stderr=err)
             self.assertEqual(out.getvalue(), "")
             self.assertIn("Something went wrong while setting the webhook", err.getvalue())
