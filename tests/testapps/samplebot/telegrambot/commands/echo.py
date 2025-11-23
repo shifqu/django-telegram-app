@@ -21,7 +21,6 @@ class WaitForInput(Step):
     def handle(self, telegram_update: TelegramUpdate):
         """Handle the step."""
         data = self.get_callback_data(telegram_update)
-        self.next_step_callback()
         self.add_waiting_for("userinput", data)
         bot.send_message(
             "Send the message you want to echo:", self.command.settings.chat_id, message_id=telegram_update.message_id

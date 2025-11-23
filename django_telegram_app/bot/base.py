@@ -145,22 +145,22 @@ class Step:
         """Handle the step."""
         raise NotImplementedError("This method should be overridden by subclasses.")
 
-    def next_step_callback(self, **kwargs):
+    def next_step_callback(self, original_data: dict, **kwargs):
         """Create a callback to advance to the next step."""
-        return self._create_callback("next_step", **kwargs)
+        return self._create_callback("next_step", original_data, **kwargs)
 
-    def previous_step_callback(self, steps_back: int, **kwargs):
+    def previous_step_callback(self, steps_back: int, original_data: dict, **kwargs):
         """Create a callback to return to the previous step."""
         kwargs["_steps_back"] = steps_back
-        return self._create_callback("previous_step", **kwargs)
+        return self._create_callback("previous_step", original_data, **kwargs)
 
-    def current_step_callback(self, **kwargs):
+    def current_step_callback(self, original_data: dict, **kwargs):
         """Create a callback to reload the current step with the provided data."""
-        return self._create_callback("current_step", **kwargs)
+        return self._create_callback("current_step", original_data, **kwargs)
 
-    def cancel_callback(self, **kwargs):
+    def cancel_callback(self, original_data: dict, **kwargs):
         """Create a callback to cancel the command."""
-        return self._create_callback("cancel", **kwargs)
+        return self._create_callback("cancel", original_data, **kwargs)
 
     def get_callback_data(self, telegram_update: TelegramUpdate):
         """Get callback data from the telegram_update.
@@ -190,7 +190,7 @@ class Step:
         The message_key will be used to store the user input in the callback data of the next step.
         """
         data["_message_key"] = message_key
-        self.command.settings.data["_waiting_for"] = self.next_step_callback(**data)
+        self.command.settings.data["_waiting_for"] = self.next_step_callback(data)
         self.command.settings.save()
 
     @property
@@ -198,9 +198,10 @@ class Step:
         """Return the name of the step."""
         return self.unique_id or type(self).__name__
 
-    def _create_callback(self, action, **kwargs):
+    def _create_callback(self, action: str, original_data: dict, **kwargs):
         """Create callback data for the current step and return the token."""
-        return self.command.create_callback(self.name, action, **kwargs)
+        data = {**original_data, **kwargs}
+        return self.command.create_callback(self.name, action, **data)
 
 
 class TelegramUpdate:

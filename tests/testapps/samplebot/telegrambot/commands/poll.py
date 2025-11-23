@@ -27,7 +27,7 @@ class AskFavouriteSport(Step):
         data.pop("favourite_sport", None)  # Remove any previous selection
         options = self.get_possible_answers()
         keyboard = [
-            [{"text": text, "callback_data": self.next_step_callback(**data, favourite_sport=value)}]
+            [{"text": text, "callback_data": self.next_step_callback(data, favourite_sport=value)}]
             for text, value in options[start:end]
         ]
         self._maybe_add_pagination_buttons(keyboard, options, data, current_page, end=end)
@@ -51,11 +51,11 @@ class AskFavouriteSport(Step):
 
     def _maybe_add_pagination_buttons(self, keyboard: list, days: list, data: dict, current_page: int, end: int):
         if current_page > 1:
-            data_back = dict(data, current_page=current_page - 1)
-            keyboard.append([{"text": "⬅️ Back", "callback_data": self.current_step_callback(**data_back)}])
+            back_callback = self.current_step_callback(data, current_page=current_page - 1)
+            keyboard.append([{"text": "⬅️ Back", "callback_data": back_callback}])
         if len(days) > end:
-            data_next = dict(data, current_page=current_page + 1)
-            keyboard.append([{"text": "➡️ Next", "callback_data": self.current_step_callback(**data_next)}])
+            next_callback = self.current_step_callback(data, current_page=current_page + 1)
+            keyboard.append([{"text": "➡️ Next", "callback_data": next_callback}])
 
 
 class Confirm(Step):
@@ -65,12 +65,15 @@ class Confirm(Step):
         """Handle the step."""
         data = self.get_callback_data(telegram_update)
         favourite_sport = data["favourite_sport"]
-        data_yes = dict(data, confirmed=True)
-        data_no = dict(data, confirmed=False, cancel_text="Poll cancelled. Your favourite sport was not recorded.")
+        callback_yes = self.next_step_callback(data, confirmed=True)
+        callback_no = self.cancel_callback(
+            data, confirmed=False, cancel_text="Poll cancelled. Your favourite sport was not recorded."
+        )
+        callback_previous = self.previous_step_callback(steps_back=1, original_data=data)
         keyboard = [
-            [{"text": "✅ Yes", "callback_data": self.next_step_callback(**data_yes)}],
-            [{"text": "❌ No", "callback_data": self.cancel_callback(**data_no)}],
-            [{"text": "⬅️ Previous step", "callback_data": self.previous_step_callback(steps_back=1, **data)}],
+            [{"text": "✅ Yes", "callback_data": callback_yes}],
+            [{"text": "❌ No", "callback_data": callback_no}],
+            [{"text": "⬅️ Previous step", "callback_data": callback_previous}],
         ]
         bot.send_message(
             f"Would you like to submit {favourite_sport} as your favourite sport?",
