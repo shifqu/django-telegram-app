@@ -59,13 +59,10 @@ class BaseCommand:
         self.finish(current_step_name, telegram_update)
 
     def previous_step(self, current_step_name: str, telegram_update: TelegramUpdate):
-        """Return to the previous step in the command.
-
-        The number of steps to go back is determined by the `steps_back` attribute; when not set, it defaults to 1.
-        """
-        current_index = self._steps_to_str().index(current_step_name)
-        steps_back = self.steps[current_index].steps_back or 1
-        previous_index = current_index - steps_back
+        """Return to the previous step in the command."""
+        data = self.get_callback_data(telegram_update.callback_data)
+        steps_back = int(data.get("_steps_back", 1))
+        previous_index = self._steps_to_str().index(current_step_name) - steps_back
         if previous_index >= 0:
             previous_step = self.steps[previous_index]
             return previous_step.handle(telegram_update)
@@ -139,10 +136,9 @@ class Step:
     This is the base class for all user-defined steps.
     """
 
-    def __init__(self, command: BaseCommand, steps_back: int = 0, unique_id: str | None = None):
+    def __init__(self, command: BaseCommand, unique_id: str | None = None):
         """Initialize the step."""
         self.command = command
-        self.steps_back = steps_back
         self.unique_id = unique_id
 
     def handle(self, telegram_update: TelegramUpdate):
@@ -153,8 +149,9 @@ class Step:
         """Create a callback to advance to the next step."""
         return self._create_callback("next_step", **kwargs)
 
-    def previous_step_callback(self, **kwargs):
+    def previous_step_callback(self, steps_back: int, **kwargs):
         """Create a callback to return to the previous step."""
+        kwargs["_steps_back"] = steps_back
         return self._create_callback("previous_step", **kwargs)
 
     def current_step_callback(self, **kwargs):
@@ -164,10 +161,6 @@ class Step:
     def cancel_callback(self, **kwargs):
         """Create a callback to cancel the command."""
         return self._create_callback("cancel", **kwargs)
-
-    def maybe_add_previous_button(self, keyboard: list, text: str = "⬅️ Previous step", **data):
-        """Add a previous button to the provided keyboard if allowed."""
-        keyboard.append([{"text": text, "callback_data": self.previous_step_callback(**data)}])
 
     def get_callback_data(self, telegram_update: TelegramUpdate):
         """Get callback data from the telegram_update.

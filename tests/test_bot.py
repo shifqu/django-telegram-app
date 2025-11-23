@@ -195,7 +195,7 @@ class BotTests(TelegramBotTestCase):
         class DummyCommand(BaseCommand):
             @property
             def steps(self):
-                return [Step(self, unique_id="step_1", steps_back=1), Step(self, unique_id="step_2")]
+                return [Step(self, unique_id="step_1"), Step(self, unique_id="step_2")]
 
         telegram_settings = MagicMock(name="telegram_settings")
         telegram_update = MagicMock(name="telegram_update")
@@ -211,7 +211,7 @@ class BotTests(TelegramBotTestCase):
         class DummyCommand(BaseCommand):
             @property
             def steps(self):
-                return [Step(self, unique_id="step_1", steps_back=1), Step(self, unique_id="step_2")]
+                return [Step(self, unique_id="step_1"), Step(self, unique_id="step_2")]
 
         telegram_settings = MagicMock(name="telegram_settings")
         telegram_update = MagicMock(name="telegram_update")

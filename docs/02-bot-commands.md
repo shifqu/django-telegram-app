@@ -5,8 +5,6 @@ A botcommand is a subclass of `django_telegram_app.base.BaseCommand` and should 
 
 Usually the first thing a step does is `self.get_callback_data`.
 
-When keyboards are included, it's best to always call `self.maybe_add_previous_button` as it adds a button to go to a previous step if the step was initialized with the `steps_back` parameter.
-
 An example of a custom bot command:
 ```python
 # {appname}/telegrambot/commands/customcommand.py
@@ -39,7 +37,6 @@ class AskYesOrNo(Step):
             [{"text": "✅ Yes", "callback_data": self.next_step_callback(**data_yes)}],
             [{"text": "❌ No", "callback_data": self.next_step_callback(**data_no)}],
         ]
-        self.maybe_add_previous_button(keyboard, **data)
         bot.send_message(
             "Yes or no?",
             self.command.settings.chat_id,
