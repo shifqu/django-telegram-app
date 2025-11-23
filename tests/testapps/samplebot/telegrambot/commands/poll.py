@@ -12,7 +12,7 @@ class Command(BaseCommand):
     @property
     def steps(self):
         """Return the steps of the command."""
-        return [AskFavouriteSport(self), Confirm(self, steps_back=1), Respond(self)]
+        return [AskFavouriteSport(self), Confirm(self), Respond(self)]
 
 
 class AskFavouriteSport(Step):
@@ -31,7 +31,6 @@ class AskFavouriteSport(Step):
             for text, value in options[start:end]
         ]
         self._maybe_add_pagination_buttons(keyboard, options, data, current_page, end=end)
-        self.maybe_add_previous_button(keyboard, **data)
         bot.send_message(
             "What is your favourite sport?",
             self.command.settings.chat_id,
@@ -71,8 +70,8 @@ class Confirm(Step):
         keyboard = [
             [{"text": "✅ Yes", "callback_data": self.next_step_callback(**data_yes)}],
             [{"text": "❌ No", "callback_data": self.cancel_callback(**data_no)}],
+            [{"text": "⬅️ Previous step", "callback_data": self.previous_step_callback(steps_back=1, **data)}],
         ]
-        self.maybe_add_previous_button(keyboard, **data)
         bot.send_message(
             f"Would you like to submit {favourite_sport} as your favourite sport?",
             self.command.settings.chat_id,
