@@ -226,16 +226,16 @@ class BotTests(TelegramBotTestCase):
 
     def test_get_or_create_telegram_settings_creates_if_allowed(self):
         """Test that get_or_create_telegram_settings creates settings if allowed."""
-        from django_telegram_app.bot.bot import get_or_create_telegram_settings
+        from django_telegram_app.bot.bot import _get_or_create_telegram_settings
         from django_telegram_app.conf import settings
 
         telegram_update = SimpleNamespace(chat_id=987654321)
         with patch.object(settings, "ALLOW_SETTINGS_CREATION_FROM_UPDATES", False):
             with self.assertRaises(get_telegram_settings_model().DoesNotExist):
-                get_or_create_telegram_settings(telegram_update)  # type: ignore[reportArgumentType]
+                _get_or_create_telegram_settings(telegram_update)  # type: ignore[reportArgumentType]
 
         with patch.object(settings, "ALLOW_SETTINGS_CREATION_FROM_UPDATES", True):
-            telegram_settings = get_or_create_telegram_settings(telegram_update)  # type: ignore[reportArgumentType]
+            telegram_settings = _get_or_create_telegram_settings(telegram_update)  # type: ignore[reportArgumentType]
             self.assertIsNotNone(telegram_settings)
             self.assertEqual(telegram_settings.chat_id, 987654321)
 

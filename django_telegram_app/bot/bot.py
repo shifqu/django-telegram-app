@@ -35,7 +35,7 @@ def is_valid_token(token: str | None):
 def handle_update(update: dict, telegram_settings: AbstractTelegramSettings | None = None):
     """Handle the update."""
     telegram_update = TelegramUpdate(update)
-    telegram_settings = get_or_create_telegram_settings(telegram_update, telegram_settings)
+    telegram_settings = _get_or_create_telegram_settings(telegram_update, telegram_settings)
 
     if telegram_update.is_command():
         _start_command_or_send_help(telegram_update, telegram_settings)
@@ -46,28 +46,6 @@ def handle_update(update: dict, telegram_settings: AbstractTelegramSettings | No
         _call_command_step(token, telegram_settings, telegram_update)
     else:
         send_help(telegram_update.chat_id, telegram_settings)
-
-
-def get_or_create_telegram_settings(
-    telegram_update: TelegramUpdate, telegram_settings: AbstractTelegramSettings | None = None
-):
-    """Get or create telegram settings for the given update.
-
-    If telegram_settings is provided, it is returned as is.
-    If not provided, attempt to retrieve a TelegramSettings object using the chat_id found in the update.
-    If no matching instance exists and `ALLOW_SETTINGS_CREATION_FROM_UPDATES` is True, a new settings instance
-    is created. Otherwise, a DoesNotExist exception is raised.
-    """
-    if telegram_settings:
-        return telegram_settings
-
-    TelegramSettingsModel = get_telegram_settings_model()
-    try:
-        return TelegramSettingsModel.objects.get(chat_id=telegram_update.chat_id)
-    except TelegramSettingsModel.DoesNotExist as exc:
-        if not settings.ALLOW_SETTINGS_CREATION_FROM_UPDATES:
-            raise exc
-        return TelegramSettingsModel.create_from_telegram_update(telegram_update)
 
 
 def send_help(chat_id: int, telegram_settings: "AbstractTelegramSettings"):
@@ -148,3 +126,26 @@ def _call_command_step(token: str, telegram_settings: "AbstractTelegramSettings"
     command = load_command_class(command_info, command_name, telegram_settings)
     getattr(command, data.action)(data.step, telegram_update)
     return True
+
+
+def _get_or_create_telegram_settings(
+    telegram_update: TelegramUpdate, telegram_settings: AbstractTelegramSettings | None = None
+):
+    """Get or create telegram settings for the given update.
+
+    If telegram_settings is provided, it is returned as is.
+    If not provided, attempt to retrieve a TelegramSettings object using the chat_id found in the update.
+    If no matching instance exists and `ALLOW_SETTINGS_CREATION_FROM_UPDATES` is True, a new settings instance
+    is created by calling TelegramSettingsModel.create_from_telegram_update.
+    Otherwise, a DoesNotExist exception is raised.
+    """
+    if telegram_settings:
+        return telegram_settings
+
+    TelegramSettingsModel = get_telegram_settings_model()
+    try:
+        return TelegramSettingsModel.objects.get(chat_id=telegram_update.chat_id)
+    except TelegramSettingsModel.DoesNotExist as exc:
+        if not settings.ALLOW_SETTINGS_CREATION_FROM_UPDATES:
+            raise exc
+        return TelegramSettingsModel.create_from_telegram_update(telegram_update)
