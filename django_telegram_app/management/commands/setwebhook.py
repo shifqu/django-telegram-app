@@ -1,7 +1,6 @@
 """Django command to set a telegram webhook."""
 
 import requests
-from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
 from django_telegram_app.conf import settings as app_settings
@@ -12,7 +11,14 @@ class Command(BaseCommand):
 
     help = "Sets the webhook for the telegram bot."
 
-    def handle(self, *_args, **_options):
+    def add_arguments(self, parser):
+        """Add command arguments."""
+        parser.add_argument(
+            "base_url",
+            help="A publicly accessible base URL used to construct the Telegram webhook (e.g. 'https://example.com').",
+        )
+
+    def handle(self, *_args, **options):
         """Set a webhook.
 
         Notes: Once a webhook is set, getUpdates no longer works.
@@ -21,7 +27,7 @@ class Command(BaseCommand):
         """
         root_url = app_settings.BOT_URL.rstrip("/")
         endpoint = f"{root_url}/setWebhook"
-        parts = [settings.DOMAIN_NAME, app_settings.ROOT_URL, app_settings.WEBHOOK_URL]
+        parts = [options["base_url"], app_settings.ROOT_URL, app_settings.WEBHOOK_URL]
         url = "/".join(part.strip("/") for part in parts if part)
         args = {"url": url}
         if app_settings.WEBHOOK_TOKEN:
