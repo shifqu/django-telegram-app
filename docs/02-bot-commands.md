@@ -34,8 +34,8 @@ class AskYesOrNo(Step):
         data_yes = dict(data, answer=True)
         data_no = dict(data, answer=False)
         keyboard = [
-            [{"text": "✅ Yes", "callback_data": self.next_step_callback(**data_yes)}],
-            [{"text": "❌ No", "callback_data": self.next_step_callback(**data_no)}],
+            [{"text": "✅ Yes", "callback_data": self.next_step_callback(data, answer=True)}],
+            [{"text": "❌ No", "callback_data": self.next_step_callback(data, answer=False)}],
         ]
         bot.send_message(
             "Yes or no?",
