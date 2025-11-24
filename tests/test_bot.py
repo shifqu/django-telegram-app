@@ -68,71 +68,56 @@ class BotTests(TelegramBotTestCase):
     def test_poll_command(self):
         """Test the poll command."""
         self.send_text("/poll")
+        self.assertEqual(self.last_bot_message, "What is your favourite sport?")
         self.click_on_text("🏓 Ping Pong")
+        self.assertEqual(self.last_bot_message, "Would you like to submit Ping Pong as your favourite sport?")
         self.click_on_text("✅ Yes")
-        expected_message_log = [
-            "What is your favourite sport?",
-            "Would you like to submit Ping Pong as your favourite sport?",
-            "Thank you! Your favourite sport Ping Pong has been recorded.",
-        ]
-        self.verify_message_log(expected_message_log)
+        self.assertEqual(self.last_bot_message, "Thank you! Your favourite sport Ping Pong has been recorded.")
 
     def test_poll_command_next_page(self):
         """Test the next page functionality in the poll command."""
         self.send_text("/poll")
+        self.assertEqual(self.last_bot_message, "What is your favourite sport?")
         self.click_on_text("➡️ Next")
+        self.assertEqual(self.last_bot_message, "What is your favourite sport?")
         self.click_on_text("🥊 Boxing")
+        self.assertRegex(self.last_bot_message, "Would you like to submit Boxing as your favourite sport?")
         self.click_on_text("✅ Yes")
-        expected_message_log = [
-            "What is your favourite sport?",
-            "What is your favourite sport?",
-            "Would you like to submit Boxing as your favourite sport?",
-            "Thank you! Your favourite sport Boxing has been recorded.",
-        ]
-        self.verify_message_log(expected_message_log)
+        self.assertEqual(self.last_bot_message, "Thank you! Your favourite sport Boxing has been recorded.")
 
     def test_poll_command_cancel(self):
         """Test cancelling the poll command."""
         self.send_text("/poll")
+        self.assertEqual(self.last_bot_message, "What is your favourite sport?")
         self.click_on_text("🤺 Fencing")
+        self.assertEqual(self.last_bot_message, "Would you like to submit Fencing as your favourite sport?")
         self.click_on_text("❌ No")
-        expected_message_log = [
-            "What is your favourite sport?",
-            "Would you like to submit Fencing as your favourite sport?",
-            "Poll cancelled. Your favourite sport was not recorded.",
-        ]
-        self.verify_message_log(expected_message_log)
+        self.assertEqual(self.last_bot_message, "Poll cancelled. Your favourite sport was not recorded.")
 
     def test_poll_command_previous(self):
         """Test using the previous button in the poll command."""
         self.send_text("/poll")
+        self.assertEqual(self.last_bot_message, "What is your favourite sport?")
         self.click_on_text("🏸 Badminton")
+        self.assertEqual(self.last_bot_message, "Would you like to submit Badminton as your favourite sport?")
         self.click_on_text("⬅️ Previous step")
+        self.assertEqual(self.last_bot_message, "What is your favourite sport?")
         self.click_on_text("🤺 Fencing")
+        self.assertEqual(self.last_bot_message, "Would you like to submit Fencing as your favourite sport?")
         self.click_on_text("✅ Yes")
-        expected_message_log = [
-            "What is your favourite sport?",
-            "Would you like to submit Badminton as your favourite sport?",
-            "What is your favourite sport?",
-            "Would you like to submit Fencing as your favourite sport?",
-            "Thank you! Your favourite sport Fencing has been recorded.",
-        ]
-        self.verify_message_log(expected_message_log)
+        self.assertEqual(self.last_bot_message, "Thank you! Your favourite sport Fencing has been recorded.")
 
     def test_echo_command(self):
         """Test the echo command."""
         self.send_text("/echo")
+        self.assertEqual(self.last_bot_message, "Send the message you want to echo:")
         self.send_text("Hello, World!")
-        expected_message_log = [
-            "Send the message you want to echo:",
-            "You said: Hello, World!",
-        ]
-        self.verify_message_log(expected_message_log)
+        self.assertEqual(self.last_bot_message, "You said: Hello, World!")
 
     def test_unknown_command(self):
         """Test sending an unknown command."""
         self.send_text("/unknowncommand")
-        self.assertIn("Currently available commands", self.fake_bot_post.call_args[1]["payload"]["text"])
+        self.assertIn("Currently available commands", self.last_bot_message)
 
     def test_unexpected_error(self):
         """Test handling an unexpected error in a command."""

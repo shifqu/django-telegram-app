@@ -53,12 +53,17 @@ class TelegramBotTestCase(TestCase):
             self.assertEqual(response.json(), {"status": "ok", "message": "Message received."})
         return response
 
-    def verify_message_log(self, expected_messages: list[str]):
-        """Verify that the messages sent to the bot match the expected messages."""
-        self.assertEqual(self.fake_bot_post.call_count, len(expected_messages))
-        for i, call_args in enumerate(self.fake_bot_post.call_args_list):
-            actual_text = call_args.kwargs["payload"]["text"]
-            self.assertEqual(actual_text, expected_messages[i])
+    @property
+    def last_bot_message(self) -> str:
+        """Return the last message sent by the bot.
+
+        This is a convenience property for tests and can be used to verify the last message.
+
+        Example:
+            self.send_text("/start")
+            self.assertEqual(self.last_bot_message, "Welcome to the bot!")
+        """
+        return self.fake_bot_post.call_args[1]["payload"]["text"]
 
     @staticmethod
     def construct_telegram_update(message_text: str):
