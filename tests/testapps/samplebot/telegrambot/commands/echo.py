@@ -1,10 +1,10 @@
 """Echo command for the sample bot."""
 
 from django_telegram_app.bot import bot
-from django_telegram_app.bot.base import BaseCommand, Step, TelegramUpdate
+from django_telegram_app.bot.base import BaseBotCommand, Step, TelegramUpdate
 
 
-class Command(BaseCommand):
+class Command(BaseBotCommand):
     """Echo command."""
 
     description = "Responds with the same message."

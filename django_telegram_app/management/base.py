@@ -7,7 +7,7 @@ Note:
 from django.core.management.base import BaseCommand
 
 from django_telegram_app import get_telegram_settings_model
-from django_telegram_app.bot.base import BaseCommand as BaseBotCommand
+from django_telegram_app.bot.base import BaseBotCommand
 from django_telegram_app.bot.bot import handle_update
 from django_telegram_app.models import AbstractTelegramSettings
 
