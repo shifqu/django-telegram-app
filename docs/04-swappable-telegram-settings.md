@@ -76,12 +76,12 @@ Below is an example pattern you can copy into your project:
 # apps/myapp/telegrambot/base.py
 from abc import ABC
 
-from django_telegram_app.bot.base import BaseCommand, Step
+from django_telegram_app.bot.base import BaseBotCommand, Step
 
 from apps.myapp.models import TelegramSettings
 
 
-class TelegramCommand(BaseCommand, ABC):
+class TelegramCommand(BaseBotCommand, ABC):
     """Project specific base class for telegram commands."""
 
     settings: TelegramSettings
@@ -94,7 +94,7 @@ class TelegramStep(Step, ABC):
 
 ```
 ### 💡 Why the ABC?
-`BaseCommand` and `Step` contain abstract methods that subclasses must implement
+`BaseBotCommand` and `Step` contain abstract methods that subclasses must implement
 (e.g., .handle() or .steps). By inheriting from `ABC`, we are explicitly marking these project-local bases as **abstract**, meaning:
 - they should not be instantiated directly
 - `Pylint`/`mypy`/`IDE tools` will not complain about missing abstract methods,

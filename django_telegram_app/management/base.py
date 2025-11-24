@@ -12,7 +12,7 @@ from django_telegram_app.bot.bot import handle_update
 from django_telegram_app.models import AbstractTelegramSettings
 
 
-class BaseTelegramCommand(BaseCommand):
+class BaseManagementCommand(BaseCommand):
     """Base command class to start Telegram bot commands.
 
     Subclasses can override:

@@ -158,7 +158,7 @@ class BotTests(TelegramBotTestCase):
         self.assertFalse(called)
 
     def test_command_has_steps_abstract(self):
-        """Test that accessing steps property on BaseCommand raises NotImplementedError."""
+        """Test that accessing steps property on BaseBotCommand raises NotImplementedError."""
         from django_telegram_app.bot.base import BaseBotCommand
 
         command = BaseBotCommand(MagicMock())
