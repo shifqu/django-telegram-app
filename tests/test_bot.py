@@ -158,10 +158,10 @@ class BotTests(TelegramBotTestCase):
         self.assertFalse(called)
 
     def test_command_has_steps_abstract(self):
-        """Test that accessing steps property on BaseCommand raises NotImplementedError."""
-        from django_telegram_app.bot.base import BaseCommand
+        """Test that accessing steps property on BaseBotCommand raises NotImplementedError."""
+        from django_telegram_app.bot.base import BaseBotCommand
 
-        command = BaseCommand(MagicMock())
+        command = BaseBotCommand(MagicMock())
         with self.assertRaises(NotImplementedError):
             _ = command.steps
 
@@ -175,9 +175,9 @@ class BotTests(TelegramBotTestCase):
 
     def test_steps_back_does_nothing_when_idx_out_of_bounds(self):
         """Test that steps_back does nothing when index would go out of bounds."""
-        from django_telegram_app.bot.base import BaseCommand, Step
+        from django_telegram_app.bot.base import BaseBotCommand, Step
 
-        class DummyCommand(BaseCommand):
+        class DummyCommand(BaseBotCommand):
             @property
             def steps(self):
                 return [Step(self, unique_id="step_1"), Step(self, unique_id="step_2")]
@@ -191,9 +191,9 @@ class BotTests(TelegramBotTestCase):
 
     def test_step_get_callback_data_calls_command_get_callback_data_if_not_waiting_for_input(self):
         """Test that Step.get_callback_data calls Command.get_callback_data if not waiting for input."""
-        from django_telegram_app.bot.base import BaseCommand, Step
+        from django_telegram_app.bot.base import BaseBotCommand, Step
 
-        class DummyCommand(BaseCommand):
+        class DummyCommand(BaseBotCommand):
             @property
             def steps(self):
                 return [Step(self, unique_id="step_1"), Step(self, unique_id="step_2")]
@@ -226,10 +226,10 @@ class BotTests(TelegramBotTestCase):
 
     def test_create_callback_provides_default(self):
         """Test that create_callback provides a default value if not kwargs are provided."""
-        from django_telegram_app.bot.base import BaseCommand
+        from django_telegram_app.bot.base import BaseBotCommand
 
         telegram_settings = MagicMock(name="telegram_settings")
-        command = BaseCommand(telegram_settings)
+        command = BaseBotCommand(telegram_settings)
         callback_token = command.create_callback("dummy_step", "next_step")
         callback_data = command.get_callback(callback_token)
         self.assertIn("correlation_key", callback_data.data)

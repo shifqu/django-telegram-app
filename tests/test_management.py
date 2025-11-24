@@ -20,12 +20,12 @@ class ManagementCommandTests(TelegramBotTestCase):
         """Set up test data."""
         cls.telegram_setting = get_telegram_settings_model().objects.create(chat_id=123456789)
 
-    def test_base_telegram_command_runs(self):
-        """Test that the BaseTelegramCommand can be invoked without errors."""
+    def test_base_management_command_runs(self):
+        """Test that the BaseManagementCommand can be invoked without errors."""
         out = StringIO()
         call_command("poll", stdout=out)
 
-    def test_base_telegram_command_checks_command_attribute(self):
+    def test_base_management_command_checks_command_attribute(self):
         """Test that the command raises if the 'command' attribute is None."""
         # Patch samplebot's poll command to None to trigger ValueError
         out = StringIO()
@@ -33,7 +33,7 @@ class ManagementCommandTests(TelegramBotTestCase):
             with patch("tests.testapps.samplebot.management.commands.poll.Command.command", None):
                 call_command("poll", stdout=out)
 
-    def test_base_telegram_command_respects_force_and_should_run(self):
+    def test_base_management_command_respects_force_and_should_run(self):
         """Test that the --force option works as expected.
 
         force=False, should_run=False -> no output

@@ -1,7 +1,7 @@
 # 📝 Writing a custom management command
-django-telegram-app provides a base management command, `BaseTelegramCommand`, that makes it easy to run Telegram bot commands using Django’s `manage.py`.
+django-telegram-app provides a base management command, `BaseManagementCommand`, that makes it easy to run Telegram bot commands using Django’s `manage.py`.
 
-## What BaseTelegramCommand does for you
+## What BaseManagementCommand does for you
 - Provides a `should_run()` hook that returns a boolean.  
 This is helpful when a command is scheduled (e.g., daily via cron) but should only run on certain days.
 - Provides a `get_telegram_settings_filter()` hook to filter telegram settings.
@@ -23,7 +23,7 @@ When using a swapped TelegramSettings model, you may find yourself overriding ge
 For example:
 ```python
 ...
-class CustomBaseTelegramCommand(BaseTelegramCommand):
+class CustomBaseManagementCommand(BaseManagementCommand):
     """Base command for telegram management commands."""
 
     def get_telegram_settings_filter(self):
@@ -40,7 +40,7 @@ class CustomBaseTelegramCommand(BaseTelegramCommand):
             handle_update(update, telegram_settings)
 
 ```
-Then, in your actual management commands, subclass `CustomBaseTelegramCommand` instead of `BaseTelegramCommand` to keep your code clean and consistent.
+Then, in your actual management commands, subclass `CustomBaseManagementCommand` instead of `BaseManagementCommand` to keep your code clean and consistent.
 
 ## Example: custom management command
 ```python
@@ -49,12 +49,12 @@ Then, in your actual management commands, subclass `CustomBaseTelegramCommand` i
 
 from django.utils import timezone
 
-from django_telegram_app.management.base import BaseTelegramCommand
+from django_telegram_app.management.base import BaseManagementCommand
 
 from apps.myapp.telegrambot.commands.customcommand import Command as CustomCommand
 
 
-class Command(BaseTelegramCommand):
+class Command(BaseManagementCommand):
     """Start the customcommand command."""
 
     help = "Start the customcommand command."

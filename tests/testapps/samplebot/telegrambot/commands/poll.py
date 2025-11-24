@@ -1,10 +1,10 @@
 """Poll command for the sample bot."""
 
 from django_telegram_app.bot import bot
-from django_telegram_app.bot.base import BaseCommand, Step, TelegramUpdate
+from django_telegram_app.bot.base import BaseBotCommand, Step, TelegramUpdate
 
 
-class Command(BaseCommand):
+class Command(BaseBotCommand):
     """Poll command."""
 
     description = "Poll for a user's favourite sport."

@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from django_telegram_app.models import AbstractTelegramSettings
 
 
-class BaseCommand:
+class BaseBotCommand:
     """Represent a base Telegram bot command.
 
     This is the base class for all user-defined Telegram bot commands.
@@ -138,7 +138,7 @@ class Step:
     This is the base class for all user-defined steps.
     """
 
-    def __init__(self, command: BaseCommand, unique_id: str | None = None):
+    def __init__(self, command: BaseBotCommand, unique_id: str | None = None):
         """Initialize the step."""
         self.command = command
         self.unique_id = unique_id

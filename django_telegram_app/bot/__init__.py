@@ -12,7 +12,7 @@ from django.apps import apps
 from django.conf import settings
 
 if TYPE_CHECKING:
-    from django_telegram_app.bot.base import BaseCommand
+    from django_telegram_app.bot.base import BaseBotCommand
     from django_telegram_app.models import AbstractTelegramSettings
 
 
@@ -22,7 +22,7 @@ def find_commands(telegrambot_dir: Path):
     return [name for _, name, is_pkg in pkgutil.iter_modules([command_dir]) if not is_pkg and not name.startswith("_")]
 
 
-def load_command_class(app_name: str, name: str, settings: AbstractTelegramSettings) -> BaseCommand:
+def load_command_class(app_name: str, name: str, settings: AbstractTelegramSettings) -> BaseBotCommand:
     """Return the Command class instance for the given command name and application name.
 
     Allow all errors raised by the import process (ImportError, AttributeError) to propagate.
