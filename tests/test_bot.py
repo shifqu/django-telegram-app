@@ -239,6 +239,16 @@ class BotTests(TelegramBotTestCase):
             self.assertIsNotNone(telegram_settings)
             self.assertEqual(telegram_settings.chat_id, 987654321)
 
+    def test_create_callback_provides_default(self):
+        """Test that create_callback provides a default value if not kwargs are provided."""
+        from django_telegram_app.bot.base import BaseCommand
+
+        telegram_settings = MagicMock(name="telegram_settings")
+        command = BaseCommand(telegram_settings)
+        callback_token = command.create_callback("dummy_step", "next_step")
+        callback_data = command.get_callback(callback_token)
+        self.assertIn("correlation_key", callback_data.data)
+
 
 class ExtraBotTests(SimpleTestCase):
     """Extra tests for bot functions which are mocked in BotTests."""
