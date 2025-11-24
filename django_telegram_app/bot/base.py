@@ -75,6 +75,8 @@ class BaseCommand:
 
     def create_callback(self, step_name: str, action: str, **kwargs):
         """Create callback data for the current command and return the token."""
+        if not kwargs:
+            kwargs = self._get_default_callback_data()
         callback_data = CallbackData(command=self.get_command_string(), step=step_name, action=action, data=kwargs)
         callback_data.save()
         return str(callback_data.token)
