@@ -1,0 +1,1 @@
+::: django_telegram_app.bot.base.TelegramUpdate
