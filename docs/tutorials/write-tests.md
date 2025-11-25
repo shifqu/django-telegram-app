@@ -65,7 +65,9 @@ The `TelegramBotTestCase` comes with some helper functions and properties.
 - click_on_text: Simulate a button click to the bot
 - last_bot_message: Property that returns the text of last message the bot sent
 
-For more information on the TelegramBotTestCase, see [testing](../topics/testing.md) or the [technical reference](../reference/api/bot/testcases.md)
+!!! note
+    For more information on the TelegramBotTestCase, see [testing](../topics/testing.md) or the [technical reference](../reference/api/bot/testcases.md)
+
 ---
 
 ## Next steps
