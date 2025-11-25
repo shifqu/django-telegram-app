@@ -8,17 +8,19 @@ theme:
   icon:
     repo: fontawesome/brands/github
   palette:
-    - primary: blue grey
     - media: "(prefers-color-scheme)"
+      primary: blue grey
       toggle:
         icon: material/brightness-auto
         name: Switch to light mode
     - media: "(prefers-color-scheme: light)"
+      primary: blue grey
       scheme: default
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
     - media: "(prefers-color-scheme: dark)"
+      primary: blue grey
       scheme: slate
       toggle:
         icon: material/brightness-4
