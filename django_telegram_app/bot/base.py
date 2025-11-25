@@ -77,6 +77,8 @@ class BaseBotCommand:
         """Create callback data for the current command and return the token."""
         if not kwargs:
             kwargs = self._get_default_callback_data()
+        if "correlation_key" not in kwargs:
+            kwargs.update(self._get_default_callback_data())
         callback_data = CallbackData(command=self.get_command_string(), step=step_name, action=action, data=kwargs)
         callback_data.save()
         return str(callback_data.token)
@@ -147,20 +149,20 @@ class Step:
         """Handle the step."""
         raise NotImplementedError("This method should be overridden by subclasses.")
 
-    def next_step_callback(self, original_data: dict, **kwargs):
+    def next_step_callback(self, original_data: dict | None = None, **kwargs):
         """Create a callback to advance to the next step."""
         return self._create_callback("next_step", original_data, **kwargs)
 
-    def previous_step_callback(self, steps_back: int, original_data: dict, **kwargs):
+    def previous_step_callback(self, steps_back: int, original_data: dict | None = None, **kwargs):
         """Create a callback to return to the previous step."""
         kwargs["_steps_back"] = steps_back
         return self._create_callback("previous_step", original_data, **kwargs)
 
-    def current_step_callback(self, original_data: dict, **kwargs):
+    def current_step_callback(self, original_data: dict | None = None, **kwargs):
         """Create a callback to reload the current step with the provided data."""
         return self._create_callback("current_step", original_data, **kwargs)
 
-    def cancel_callback(self, original_data: dict, **kwargs):
+    def cancel_callback(self, original_data: dict | None = None, **kwargs):
         """Create a callback to cancel the command."""
         return self._create_callback("cancel", original_data, **kwargs)
 
@@ -200,8 +202,9 @@ class Step:
         """Return the name of the step."""
         return self.unique_id or type(self).__name__
 
-    def _create_callback(self, action: str, original_data: dict, **kwargs):
+    def _create_callback(self, action: str, original_data: dict | None = None, **kwargs):
         """Create callback data for the current step and return the token."""
+        original_data = original_data or {}
         data = {**original_data, **kwargs}
         return self.command.create_callback(self.name, action, **data)
 
