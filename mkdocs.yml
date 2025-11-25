@@ -67,9 +67,11 @@ nav:
       - Getting Started: tutorials/getting-started.md
       - Your First Bot Command: tutorials/dice-roller-tutorial.md
       - Extending Your First Bot Command: tutorials/dice-roller-tutorial-ext.md
+      - Writing Tests For Your Bot Commands: tutorials/write-tests.md
+      - What's Next: tutorials/whats-next.md
 
   - Topic Guides:
-      - Overview: topics/index.md
+      - Topics Overview: topics/index.md
       - Bot Architecture: topics/bot-architecture.md
       - Callback Data: topics/callback-data.md
       - Update Flow: topics/update-flow.md
@@ -77,22 +79,21 @@ nav:
       - TelegramSettings Design: topics/telegramsettings-design.md
       - Testing the Bot: topics/testing.md
 
-  - Reference:
-      #     - Overview: reference/index.md
-      - Configuration: reference/configuration.md
-  #     - API:
-  #         - BaseBotCommand: reference/api/base-bot-command.md
-  #         - Step: reference/api/step.md
-  #         - TelegramUpdate: reference/api/telegram-update.md
-  #         - CallbackData: reference/api/callbackdata.md
-  #         - TelegramSettings: reference/api/telegramsettings-model.md
-  #     - Checks: reference/checks.md
+  - How-To Guides:
+      - Guides Overview: howto/index.md
+      - Swap TelegramSettings: howto/swap-telegramsettings.md
+      - Write Management Commands: howto/write-management-commands.md
+      - Debug Bot Issues: howto/debug-bot-issues.md
 
-  # - How-To Guides:
-  #     - Overview: howto/index.md
-  #     - Write Custom Commands: howto/write-custom-commands.md
-  #     - Test Custom Commands: howto/test-custom-commands.md
-  #     - Swap TelegramSettings: howto/swap-telegramsettings.md
-  #     - Write Management Commands: howto/write-management-commands.md
-  #     - Deploy Webhooks: howto/deploy-webhooks.md
-  #     - Debug Bot Issues: howto/debug-bot-issues.md
+  - Reference:
+      - Reference Overview: reference/index.md
+      - API:
+          - BaseBotCommand: reference/api/bot/base-bot-command.md
+          - Step: reference/api/bot/step.md
+          - TelegramUpdate: reference/api/bot/telegram-update.md
+          - TestCases: reference/api/bot/testcases.md
+          - CallbackData: reference/api/callbackdata.md
+          - Message: reference/api/message.md
+          - TelegramSettings: reference/api/telegramsettings.md
+      - Checks: reference/checks.md
+      - Configuration: reference/configuration.md
