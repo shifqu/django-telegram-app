@@ -225,12 +225,39 @@ class BotTests(TelegramBotTestCase):
             self.assertEqual(telegram_settings.chat_id, 987654321)
 
     def test_create_callback_provides_default(self):
-        """Test that create_callback provides a default value if not kwargs are provided."""
+        """Test that create_callback provides a default value if no kwargs are provided."""
         from django_telegram_app.bot.base import BaseBotCommand
 
         telegram_settings = MagicMock(name="telegram_settings")
         command = BaseBotCommand(telegram_settings)
         callback_token = command.create_callback("dummy_step", "next_step")
+        callback_data = command.get_callback(callback_token)
+        self.assertIn("correlation_key", callback_data.data)
+
+    def test_step_create_callback_always_includes_correlation_key(self):
+        """Test that Step.*_step_callback provides includes a correlation key if no or bad original data is provided."""
+        from django_telegram_app.bot.base import BaseBotCommand, Step
+
+        telegram_settings = MagicMock(name="telegram_settings")
+        command = BaseBotCommand(telegram_settings)
+        step = Step(command)
+        callback_token = step.next_step_callback(some_value=123)
+        callback_data = command.get_callback(callback_token)
+        self.assertIn("correlation_key", callback_data.data)
+
+        callback_token = step.previous_step_callback(1, some_value=123)
+        callback_data = command.get_callback(callback_token)
+        self.assertIn("correlation_key", callback_data.data)
+
+        callback_token = step.current_step_callback(some_value=123)
+        callback_data = command.get_callback(callback_token)
+        self.assertIn("correlation_key", callback_data.data)
+
+        callback_token = step.cancel_callback(some_value=123)
+        callback_data = command.get_callback(callback_token)
+        self.assertIn("correlation_key", callback_data.data)
+
+        callback_token = step.next_step_callback(original_data={"faulty": "original"}, some_value=123)
         callback_data = command.get_callback(callback_token)
         self.assertIn("correlation_key", callback_data.data)
 
