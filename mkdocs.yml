@@ -68,13 +68,14 @@ nav:
       - Your First Bot Command: tutorials/dice-roller-tutorial.md
       - Extending Your First Bot Command: tutorials/dice-roller-tutorial-ext.md
 
-  # - Topic Guides:
-  #     - Overview: topics/index.md
-  #     - Bot Architecture: topics/bot-architecture.md
-  #     - Callback Data: topics/callback-data.md
-  #     - Update Flow: topics/update-flow.md
-  #     - State Management: topics/state-management.md
-  #     - TelegramSettings Design: topics/telegramsettings-design.md
+  - Topic Guides:
+      - Overview: topics/index.md
+      - Bot Architecture: topics/bot-architecture.md
+      - Callback Data: topics/callback-data.md
+      - Update Flow: topics/update-flow.md
+      - State Management: topics/state-management.md
+      - TelegramSettings Design: topics/telegramsettings-design.md
+      - Testing the Bot: topics/testing.md
 
   - Reference:
       #     - Overview: reference/index.md
