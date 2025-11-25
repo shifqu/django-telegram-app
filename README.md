@@ -1,77 +1,64 @@
-# django-telegram-app
-A Django app to integrate Telegram bots into your project.
+<h1 align="center">
+  Django Telegram App
+</h1>
 
-Detailed documentation is in the [`docs/`](https://github.com/shifqu/django-telegram-app/tree/main/docs/) directory.
+<p align="center">
+  <img src="docs/assets/banner.png" alt="django-telegram-app logo" width="480">
+</p>
+
+<p align="center">
+  <i>A Django app to integrate Telegram bots into your project.</i>
+</p>
 
 ---
-[![Code style: Ruff](https://img.shields.io/badge/style-ruff-8b5000)](https://github.com/astral-sh/ruff)
-[![Typing: Pyright](https://img.shields.io/badge/typing-pyright-725a42
-)](https://github.com/RobertCraigie/pyright-python)
-[![Linting: Pylint](https://img.shields.io/badge/typing-pylint-755147
-)](https://github.com/pylint-dev/pylint)
-[![Framework: Django](https://img.shields.io/badge/framework-django-727242)](https://docs.djangoproject.com/en/5.2/)
-[![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://opensource.org/license/mit)
-[![CI Validation](https://github.com/shifqu/django-telegram-app/actions/workflows/ci.yml/badge.svg)](https://github.com/shifqu/django-telegram-app/actions/workflows/ci.yml)
+
+<p align="center">
+<a href="https://github.com/astral-sh/ruff" target="_blank"><img src="https://img.shields.io/badge/style-ruff-8b5000" alt="Style: ruff"/></a>
+<a href="https://github.com/RobertCraigie/pyright-python" target="_blank"><img src="https://img.shields.io/badge/typing-pyright-725a42" alt="Typing: pyright"/></a>
+<a href="https://github.com/pylint-dev/pylint" target="_blank"><img src="https://img.shields.io/badge/linting-pylint-755147" alt="Linting: pylint"/></a>
+<a href="https://docs.djangoproject.com/en/5.2/" target="_blank"><img src="https://img.shields.io/badge/framework-django-727242" alt="Framework: Django" /></a>
+<a href="https://opensource.org/license/mit" target="_blank"><img src="https://img.shields.io/github/license/mashape/apistatus.svg" alt="License" /></a>
+<a href="https://github.com/shifqu/django-telegram-app/actions/workflows/ci.yml" target="_blank"><img src="https://github.com/shifqu/django-telegram-app/actions/workflows/ci.yml/badge.svg" alt="Status: CI Validation" /></a>
+</p>
+
+---
+
+**Documentation**: [https://shifqu.github.io/django-telegram-app/](https://shifqu.github.io/django-telegram-app/)
+
+**Source code**: [https://github.com/shifqu/django-telegram-app/](https://github.com/shifqu/django-telegram-app/)
 
 ---
 
 ## Features
 
-- ✅ Command-based bot architecture with step-based flow
-- ✅ Swappable `TelegramSettings` model
-- ✅ Optional admin integration for Telegram settings
-- ✅ Extensible: add commands per app via auto-discovery
-- ✅ Built-in system checks for misconfiguration
-- ✅ Django ORM integration (no direct API handling required)
-- ✅ Easy to test (includes custom TelegramTestCase)
+- 🧩 Command-based bot architecture with step-based flow
+- 🔄 Swappable `TelegramSettings` model
+- ⚙️ Optional admin integration for Telegram settings
+- 📦 Extensible: add bot-commands per app via auto-discovery
+- 🛡️ Built-in system checks for misconfiguration
+- 🗄️ Django ORM integration (no direct API handling required)
+- 🧪 Easy to test (includes custom `TelegramTestCase`)
 
-## Requirements (officially supported)
+## Requirements
 
 - Python **3.10+**
 - Django **5.2+**
 
-## Quick start
+## Getting started
 
-1. Install the package
-    ```bash
-    pip install django-telegram-app
-    ```
+To set up your bot, follow the step-by-step guide in  
+➡️ [Getting started](https://shifqu.github.io/django-telegram-app/getting-started)
 
-1. Add "django_telegram_app" to your INSTALLED_APPS setting like this:
-    ```python
-    INSTALLED_APPS = [
-        ...,
-        "django_telegram_app",
-    ]
-    ```
+## Support
 
-2. Include the telegram URLconf in your project urls.py like this:
-    ```python
-    ...
-    from django_telegram_app.conf import settings as telegram_app_settings
-    ...
-    path(telegram_app_settings.ROOT_URL, include("django_telegram_app.urls")),
-    ```
-
-3. Create your own commands in each app under `{appname}/telegrambot/commands/`. Refer to the documentation for more details on how to write custom commands.
-
-5. Configure the telegram settings. Refer to the documentation for all possible settings. 
-Minimal configuration is like this:
-    ```python
-    # mysite/settings.py
-    ...
-    TELEGRAM = {
-        "BOT_URL": "https://api.telegram.org/bot123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11/"
-    }
-    ...
-    ```
-
-6. Run `python manage.py migrate` to create the models.
-
-7. Run `python manage.py setwebhook` to set the url on which you would like to receive telegram updates.
-
-8. Start the development server and visit the admin to edit/add TelegramSettings there.
+See our issue tracker at: [https://github.com/shifqu/django-telegram-app/issues](https://github.com/shifqu/django-telegram-app/issues)
 
 ## License
 
 This project is licensed under the MIT License — see the [`LICENSE`](https://github.com/shifqu/django-telegram-app/blob/main/LICENSE) file for details.
+
+## About the Mascot
+
+The project’s mascot is a robotic pigeon — inspired by the historical use of carrier pigeons to deliver messages reliably over long distances.  
+The robotic design reflects the robustness and sturdiness of the Django framework, while symbolizing automation and modern messaging flows.  
+Together, it represents a blend of tradition and technology: a dependable messenger for the world of Telegram bots.
