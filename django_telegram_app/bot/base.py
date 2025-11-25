@@ -22,7 +22,7 @@ class BaseBotCommand:
     This is the base class for all user-defined Telegram bot commands.
     """
 
-    description: str
+    description: str = ""
 
     def __init__(self, settings: AbstractTelegramSettings):
         """Initialize the command."""
