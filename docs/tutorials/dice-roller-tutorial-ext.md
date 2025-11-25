@@ -68,8 +68,7 @@ class AskName(Step):
 
     def handle(self, telegram_update: TelegramUpdate):
         """Prompt the user to enter their character name."""
-        initial_data = {}
-        self.add_waiting_for("character_name", initial_data)
+        self.add_waiting_for("character_name")
         bot.send_message(
             "What's your character's name?",
             self.command.settings.chat_id,
@@ -79,9 +78,6 @@ class AskName(Step):
 ```
 
 This command stores the waiting_for state on the chat's telegram-settings. On the next message sent by the user to the bot, the input will be used to fill the key `character_name` in the callbackdata.
-
-!!! note
-    Because this is the first step in the command, we don't have callbackdata. Best practice is to call `self.get_callback_data(update)` anyway, as this would generate the initial default data. However, should you forget about this and pass an empty dict to add_waiting_for (like we *deliberately* do in the example), the method is smart enough to create default data for you anyway.
 
 ---
 

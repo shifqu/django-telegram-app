@@ -188,13 +188,13 @@ class Step:
         callback_token = telegram_update.callback_data
         return self.command.get_callback_data(callback_token)
 
-    def add_waiting_for(self, message_key: str, data: dict[str, Any]):
+    def add_waiting_for(self, message_key: str, data: dict[str, Any] | None = None):
         """Add waiting_for to the command settings.
 
         The message_key will be used to store the user input in the callback data of the next step.
         """
-        data["_message_key"] = message_key
-        self.command.settings.data["_waiting_for"] = self.next_step_callback(data)
+        data = data or {}
+        self.command.settings.data["_waiting_for"] = self.next_step_callback(data, _message_key=message_key)
         self.command.settings.save()
 
     @property

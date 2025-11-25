@@ -36,7 +36,7 @@ This is currently used for a single feature:
 Steps may request text input:
 
 ```python
-self.add_waiting_for("character_name", data)
+self.add_waiting_for("character_name")
 ```
 
 The next non-command message updates the callback data under `"character_name"`.
