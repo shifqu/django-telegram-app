@@ -8,6 +8,7 @@ theme:
   icon:
     repo: fontawesome/brands/github
   palette:
+    - primary: blue grey
     - media: "(prefers-color-scheme)"
       toggle:
         icon: material/brightness-auto
