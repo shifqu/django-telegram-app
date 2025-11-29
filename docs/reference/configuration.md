@@ -84,7 +84,7 @@ Default: `"Currently available commands:"`
 A short paragraph placed **before** the auto-generated command list in the `help` message.
 
 This setting only controls the introductory text.
-The list of commands is still generated automatically from the discovered `Command` objects.
+The list of commands is still generated automatically from the discovered `Command` objects (excluding any marked with `exclude_from_help=True`).
 You should not include command listings yourself.
 
 A blank line is automatically inserted between the intro and the generated command list, so you may omit a trailing newline unless you want additional spacing.

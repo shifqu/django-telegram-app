@@ -53,6 +53,8 @@ def send_help(chat_id: int, telegram_settings: "AbstractTelegramSettings"):
     command_info_list = []
     for command_name, app_name in get_commands().items():
         command = load_command_class(app_name, command_name, telegram_settings)
+        if command.exclude_from_help:
+            continue
         command_info_list.append(f"{command.get_command_string()} - {command.description}")
 
     commands_text = "\n".join(command_info_list)
