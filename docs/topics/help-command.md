@@ -61,7 +61,7 @@ TELEGRAM = {
 This must be a **dotted path to a callable** with the signature:
 
 ``` python
-def my_help_renderer(chat_id: int, telegram_settings: "AbstractTelegramSettings") -> str:
+def my_help_renderer(telegram_settings: "AbstractTelegramSettings") -> str:
     ...
 ```
 

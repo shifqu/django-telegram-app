@@ -107,10 +107,7 @@ In this case, HELP_TEXT_INTRO is ignored.
 Use this setting when you want complete control over the presentation of help text, formatting, structure, or command layout, rather than relying on the app’s default auto-generated command list.
 
 ```python
-def custom_help_renderer(
-    chat_id: int,
-    telegram_settings: "AbstractTelegramSettings",
-) -> str:
+def custom_help_renderer(telegram_settings: "AbstractTelegramSettings") -> str:
     ...
 ```
 It must return the full help message as a string.
