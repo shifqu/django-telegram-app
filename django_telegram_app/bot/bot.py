@@ -56,7 +56,7 @@ def send_help(chat_id: int, telegram_settings: "AbstractTelegramSettings"):
         command_info_list.append(f"{command.get_command_string()} - {command.description}")
 
     commands_text = "\n".join(command_info_list)
-    help_text = f"Currently available commands:\n{commands_text}"
+    help_text = f"{settings.HELP_TEXT_INTRO}\n{commands_text}"
     send_message(help_text, chat_id)
 
 

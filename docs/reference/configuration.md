@@ -78,6 +78,21 @@ TELEGRAM = {
 }
 ```
 
+### HELP_TEXT_INTRO
+Default: `"Currently available commands:"`
+
+A short paragraph placed **before** the auto-generated command list in the `help` message.
+
+This setting only controls the introductory text.
+The list of commands is still generated automatically from the discovered `Command` objects.
+You should not include command listings yourself.
+
+A blank line is automatically inserted between the intro and the generated command list, so you may omit a trailing newline unless you want additional spacing.
+
+```python title="mysite/settings.py"
+HELP_TEXT_INTRO = "Hi, I am a bot with a custom intro!\nI can do the following for you:"
+```
+
 ### TELEGRAM_SETTINGS_MODEL
 Default: "django_telegram_app.TelegramSettings"
 
@@ -101,6 +116,7 @@ TELEGRAM = {
     "WEBHOOK_TOKEN": "s3cr3t-t0ken-1234",
     "ALLOW_SETTINGS_CREATION_FROM_UPDATES": True,
     "REGISTER_DEFAULT_ADMIN": False,
+    "HELP_TEXT_INTRO": "Hi, I am a bot with a custom intro!\nI can do the following for you:",
 }
 
 TELEGRAM_SETTINGS_MODEL = "myapp.TelegramSettings"
