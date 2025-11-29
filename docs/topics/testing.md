@@ -31,7 +31,9 @@ from django_telegram_app.testing import TelegramBotTestCase
 This base class provides:
 
 - `send_text(message)` – simulate an incoming text message  
-- `click_on_button(button_label)` – simulate clicking an inline keyboard button  
+- `click_on_button(button_label_or_index)` – simulate clicking an inline keyboard button
+  - When passing a label, this will be searched for, when passing an int, the index of the button will be searched for.
+  - Passing index can be useful in case the buttons have dynamic text or you just want to click the last button (-1)  
 - `last_bot_message` – inspect the most recent bot message  
 - automatic mocking of `bot.post(...)`  
 - a helper method for posting raw update payloads  
@@ -64,7 +66,7 @@ self.assertIn("You rolled", self.last_bot_message)
 `click_on_button()` automatically:
 
 1. inspects the last keyboard sent by the bot  
-2. finds the correct button by text  
+2. finds the correct button by text or index  
 3. constructs a callback query update  
 4. posts it to the webhook  
 
@@ -86,7 +88,7 @@ Example:
 def test_character_name_flow(self):
     self.send_text("/roll")            # triggers AskCharacterName
     self.send_text("Gimli")            # stored under "character_name"
-    self.click_on_button("🎲 d20")       # choose die
+    self.click_on_button(0)            # choose the first die on the keyboard
     self.assertIn("Gimli rolled", self.last_bot_message)
 ```
 
