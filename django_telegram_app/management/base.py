@@ -51,10 +51,12 @@ class BaseManagementCommand(BaseCommand):
             return
 
         telegram_settings_filter = self.get_telegram_settings_filter()
-        for telegram_settings in get_telegram_settings_model().objects.filter(**telegram_settings_filter):
+        telegram_settings_list = get_telegram_settings_model().objects.filter(**telegram_settings_filter)
+        for telegram_settings in telegram_settings_list:
             self.handle_command(telegram_settings, command_text)
             self.stdout.write(self.style.SUCCESS(f"Started the command for {telegram_settings}."))
-        else:
+
+        if not telegram_settings_list:
             self.stdout.write(self.style.NOTICE("No Telegram-settings found for the given filter. Nothing to do."))
 
     def should_run(self) -> bool:

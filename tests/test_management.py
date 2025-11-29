@@ -41,21 +41,25 @@ class ManagementCommandTests(TelegramBotTestCase):
         force=False, should_run=True -> output expected
         force=True, should_run=True -> output expected
         """
-        out = StringIO()
-
         with patch("tests.testapps.samplebot.management.commands.poll.Command.should_run", return_value=False):
+            out = StringIO()
             call_command("poll", force=False, stdout=out)
             self.assertIn("Command '/poll' skipped as `should_run` returned False.", out.getvalue())
+            out = StringIO()
             call_command("poll", force=True, stdout=out)
             self.assertIn(f"Started the command for {self.telegram_setting}.", out.getvalue())
+            self.assertNotIn("No Telegram-settings found for the given filter. Nothing to do.", out.getvalue())
 
         with patch("tests.testapps.samplebot.management.commands.poll.Command.should_run", return_value=True):
+            out = StringIO()
             call_command("poll", force=False, stdout=out)
             self.assertIn(f"Started the command for {self.telegram_setting}.", out.getvalue())
+            out = StringIO()
             call_command("poll", force=True, stdout=out)
             self.assertIn(f"Started the command for {self.telegram_setting}.", out.getvalue())
 
         self.telegram_setting.delete()
+        out = StringIO()
         call_command("poll", force=True, stdout=out)
         self.assertIn("No Telegram-settings found for the given filter. Nothing to do.", out.getvalue())
 
