@@ -23,6 +23,7 @@ class BaseBotCommand:
     """
 
     description: str = ""
+    exclude_from_help: bool = False
 
     def __init__(self, settings: AbstractTelegramSettings):
         """Initialize the command."""

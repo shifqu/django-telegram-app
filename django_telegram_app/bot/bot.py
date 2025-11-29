@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import requests
+from django.utils.module_loading import import_string
 
 from django_telegram_app import get_telegram_settings_model
 from django_telegram_app.bot import get_commands, load_command_class
@@ -49,15 +50,45 @@ def handle_update(update: dict, telegram_settings: AbstractTelegramSettings | No
 
 
 def send_help(chat_id: int, telegram_settings: "AbstractTelegramSettings"):
-    """Send a help message to the user."""
+    """Send a help message to the user.
+
+    The intro can be customized by setting HELP_TEXT_INTRO in settings.
+    To completely customize the help text, set HELP_RENDERER in settings.
+    """
+    help_text = _get_help_text(telegram_settings)
+    send_message(help_text, chat_id)
+
+
+def _get_help_text(telegram_settings: "AbstractTelegramSettings") -> str:
+    """Return the help text."""
+    help_text_callable = _get_help_text_callable()
+    return help_text_callable(telegram_settings)
+
+
+def _get_help_text_callable():
+    """Return a callable that returns the help text."""
+    if settings.HELP_RENDERER:
+        renderer_callable = import_string(settings.HELP_RENDERER)
+        return renderer_callable
+    return _default_help_text_renderer
+
+
+def _default_help_text_renderer(telegram_settings: "AbstractTelegramSettings") -> str:
+    """Return the default help text.
+
+    This function constructs a help text listing all available commands,
+    excluding those marked with `exclude_from_help = True`.
+    """
     command_info_list = []
     for command_name, app_name in get_commands().items():
         command = load_command_class(app_name, command_name, telegram_settings)
+        if command.exclude_from_help:
+            continue
         command_info_list.append(f"{command.get_command_string()} - {command.description}")
 
     commands_text = "\n".join(command_info_list)
-    help_text = f"Currently available commands:\n{commands_text}"
-    send_message(help_text, chat_id)
+    help_text = f"{settings.HELP_TEXT_INTRO}\n{commands_text}"
+    return help_text
 
 
 def send_message(text: str, chat_id: int, reply_markup: dict | None = None, message_id: int = 0):
