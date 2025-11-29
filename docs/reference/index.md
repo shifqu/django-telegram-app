@@ -34,7 +34,7 @@ These pages cover the **core building blocks** you use to implement and test com
 
 - **[TestCases](api/bot/testcases.md)**  
   Reference for the testing helpers (e.g. `TelegramBotTestCase`).  
-  Covers methods such as `send_text()`, `click_on_text()`, `last_bot_message`,
+  Covers methods such as `send_text()`, `click_on_button()`, `last_bot_message`,
   and how the bot client is mocked in tests.
 
 ---

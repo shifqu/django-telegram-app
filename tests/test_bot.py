@@ -69,42 +69,42 @@ class BotTests(TelegramBotTestCase):
         """Test the poll command."""
         self.send_text("/poll")
         self.assertEqual(self.last_bot_message, "What is your favourite sport?")
-        self.click_on_text("🏓 Ping Pong")
+        self.click_on_button("🏓 Ping Pong")
         self.assertEqual(self.last_bot_message, "Would you like to submit Ping Pong as your favourite sport?")
-        self.click_on_text("✅ Yes")
+        self.click_on_button(0)  # First button is "✅ Yes"
         self.assertEqual(self.last_bot_message, "Thank you! Your favourite sport Ping Pong has been recorded.")
 
     def test_poll_command_next_page(self):
         """Test the next page functionality in the poll command."""
         self.send_text("/poll")
         self.assertEqual(self.last_bot_message, "What is your favourite sport?")
-        self.click_on_text("➡️ Next")
+        self.click_on_button(-1)  # Last button is "➡️ Next page"
         self.assertEqual(self.last_bot_message, "What is your favourite sport?")
-        self.click_on_text("🥊 Boxing")
+        self.click_on_button("🥊 Boxing")
         self.assertRegex(self.last_bot_message, "Would you like to submit Boxing as your favourite sport?")
-        self.click_on_text("✅ Yes")
+        self.click_on_button("✅ Yes")
         self.assertEqual(self.last_bot_message, "Thank you! Your favourite sport Boxing has been recorded.")
 
     def test_poll_command_cancel(self):
         """Test cancelling the poll command."""
         self.send_text("/poll")
         self.assertEqual(self.last_bot_message, "What is your favourite sport?")
-        self.click_on_text("🤺 Fencing")
+        self.click_on_button("🤺 Fencing")
         self.assertEqual(self.last_bot_message, "Would you like to submit Fencing as your favourite sport?")
-        self.click_on_text("❌ No")
+        self.click_on_button("❌ No")
         self.assertEqual(self.last_bot_message, "Poll cancelled. Your favourite sport was not recorded.")
 
     def test_poll_command_previous(self):
         """Test using the previous button in the poll command."""
         self.send_text("/poll")
         self.assertEqual(self.last_bot_message, "What is your favourite sport?")
-        self.click_on_text("🏸 Badminton")
+        self.click_on_button("🏸 Badminton")
         self.assertEqual(self.last_bot_message, "Would you like to submit Badminton as your favourite sport?")
-        self.click_on_text("⬅️ Previous step")
+        self.click_on_button("⬅️ Previous step")
         self.assertEqual(self.last_bot_message, "What is your favourite sport?")
-        self.click_on_text("🤺 Fencing")
+        self.click_on_button("🤺 Fencing")
         self.assertEqual(self.last_bot_message, "Would you like to submit Fencing as your favourite sport?")
-        self.click_on_text("✅ Yes")
+        self.click_on_button("✅ Yes")
         self.assertEqual(self.last_bot_message, "Thank you! Your favourite sport Fencing has been recorded.")
 
     def test_echo_command(self):
@@ -260,6 +260,20 @@ class BotTests(TelegramBotTestCase):
         callback_token = step.next_step_callback(original_data={"faulty": "original"}, some_value=123)
         callback_data = command.get_callback(callback_token)
         self.assertIn("correlation_key", callback_data.data)
+
+    def test_click_on_text_deprecation(self):
+        """Test that click_on_text raises a deprecation warning."""
+        with self.assertWarns(DeprecationWarning) as cm:
+            with patch.object(self, "click_on_button", return_value=MagicMock()):
+                self.click_on_text("Some Text")
+        self.assertIn("click_on_text is deprecated", str(cm.warning))
+
+    def test_click_on_button_by_index_invalid_type(self):
+        """Test that click_on_button raises ValueError when given an invalid type."""
+        with self.assertRaises(ValueError) as cm:
+            with patch.object(self.fake_bot_post, "call_args", new=MagicMock()):
+                self.click_on_button(3.14)  # Invalid type: float  # type: ignore[reportArgumentType]
+        self.assertIn("button must be a string or an integer index", str(cm.exception))
 
 
 class ExtraBotTests(SimpleTestCase):

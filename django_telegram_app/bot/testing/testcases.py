@@ -1,5 +1,6 @@
 """Reusable testcases for Telegram bot app."""
 
+import warnings
 from unittest.mock import MagicMock, patch
 
 from django.test.testcases import TestCase
@@ -30,8 +31,31 @@ class TelegramBotTestCase(TestCase):
 
     def click_on_text(self, text: str, verify: bool = True):
         """Simulate a click on the specified text button."""
+        warnings.warn(
+            "click_on_text is deprecated and will be removed in version 2. Use click_on_button instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.click_on_button(text, verify=verify)
+
+    def click_on_button(self, button: str | int, verify: bool = True):
+        """Simulate a click on an inline button by text or index.
+
+        When `button` is a string, it searches for a button with matching text.
+        When `button` is an integer, it treats it as the index of the button in
+        the inline keyboard (flattened).
+        """
         inline_keyboard = self.fake_bot_post.call_args[1]["payload"]["reply_markup"]["inline_keyboard"]
-        callback_data = [item for row in inline_keyboard for item in row if item["text"] == text][0]["callback_data"]
+        if isinstance(button, str):
+            callback_data = [item for row in inline_keyboard for item in row if item["text"] == button][0][
+                "callback_data"
+            ]
+        elif isinstance(button, int):
+            flat_buttons = [item for row in inline_keyboard for item in row]
+            callback_data = flat_buttons[button]["callback_data"]
+        else:
+            raise ValueError("button must be a string or an integer index")
+
         data = self.construct_telegram_callback_query(callback_data)
         response = self.post_data(data, verify=verify)
         return response

@@ -118,7 +118,7 @@ Create a failing test with `TelegramBotTestCase`:
 
 ```python
 self.send_text("/roll")
-self.click_on_text("🎲 d20")
+self.click_on_button("🎲 d20")
 self.assertIn("You rolled", self.last_bot_message)
 ```
 
