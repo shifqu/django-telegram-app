@@ -39,19 +39,19 @@ class RollCommandTests(TelegramBotTestCase):
         self.assertEqual(self.last_bot_message, "What's your character's name?")
         self.send_text("Gandalf")
         self.assertEqual(self.last_bot_message, "Choose a die to roll:")
-        self.click_on_text("🎲 d20")
+        self.click_on_button("🎲 d20")
         self.assertRegex(self.last_bot_message, "Gandalf rolled .* on a d20! 🎉")
-        self.click_on_text("🔁 Roll again")
+        self.click_on_button("🔁 Roll again")
         self.assertRegex(self.last_bot_message, "Gandalf rolled .* on a d20! 🎉")
-        self.click_on_text("🎯 Choose another die")
+        self.click_on_button("🎯 Choose another die")
         self.assertEqual(self.last_bot_message, "Choose a die to roll:")
-        self.click_on_text("🎲 d8")
+        self.click_on_button("🎲 d8")
         self.assertRegex(self.last_bot_message, "Gandalf rolled .* on a d8! 🎉")
-        self.click_on_text("✏️ Choose another name")
+        self.click_on_button("✏️ Choose another name")
         self.assertEqual(self.last_bot_message, "What's your character's name?")
         self.send_text("Gimli")
         self.assertEqual(self.last_bot_message, "Choose a die to roll:")
-        self.click_on_text("🎲 d4")
+        self.click_on_button("🎲 d4")
         self.assertRegex(self.last_bot_message, "Gimli rolled .* on a d4! 🎉")
 
 ```
@@ -62,7 +62,7 @@ class RollCommandTests(TelegramBotTestCase):
 As you could already see, the testing class is quite standard Django.
 The `TelegramBotTestCase` comes with some helper functions and properties.
 - send_text: Effectively send a text to the bot
-- click_on_text: Simulate a button click to the bot
+- click_on_button: Simulate a button click to the bot
 - last_bot_message: Property that returns the text of last message the bot sent
 
 !!! note

@@ -31,7 +31,7 @@ from django_telegram_app.testing import TelegramBotTestCase
 This base class provides:
 
 - `send_text(message)` – simulate an incoming text message  
-- `click_on_text(button_label)` – simulate clicking an inline keyboard button  
+- `click_on_button(button_label)` – simulate clicking an inline keyboard button  
 - `last_bot_message` – inspect the most recent bot message  
 - automatic mocking of `bot.post(...)`  
 - a helper method for posting raw update payloads  
@@ -57,11 +57,11 @@ To simulate pressing an inline button:
 
 ```python
 self.send_text("/roll")
-self.click_on_text("🎲 d6")
+self.click_on_button("🎲 d6")
 self.assertIn("You rolled", self.last_bot_message)
 ```
 
-`click_on_text()` automatically:
+`click_on_button()` automatically:
 
 1. inspects the last keyboard sent by the bot  
 2. finds the correct button by text  
@@ -86,7 +86,7 @@ Example:
 def test_character_name_flow(self):
     self.send_text("/roll")            # triggers AskCharacterName
     self.send_text("Gimli")            # stored under "character_name"
-    self.click_on_text("🎲 d20")       # choose die
+    self.click_on_button("🎲 d20")       # choose die
     self.assertIn("Gimli rolled", self.last_bot_message)
 ```
 
