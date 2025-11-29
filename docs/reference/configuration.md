@@ -90,7 +90,36 @@ You should not include command listings yourself.
 A blank line is automatically inserted between the intro and the generated command list, so you may omit a trailing newline unless you want additional spacing.
 
 ```python title="mysite/settings.py"
-HELP_TEXT_INTRO = "Hi, I am a bot with a custom intro!\nI can do the following for you:"
+TELEGRAM= {
+    ...
+    "HELP_TEXT_INTRO": "Hi, I am a bot with a custom intro!\nI can do the following for you:",
+}
+```
+
+### HELP_TEXT_RENDERER
+Default: `None`
+
+Provides full control over the help message that django_telegram_app sends when unexpected or unrecognized input is received.
+
+Set this to a dotted path string pointing to a callable.
+If this setting is defined, it replaces the entire help message, including the command list.
+In this case, HELP_TEXT_INTRO is ignored.  
+Use this setting when you want complete control over the presentation of help text, formatting, structure, or command layout, rather than relying on the app’s default auto-generated command list.
+
+```python
+def custom_help_renderer(
+    chat_id: int,
+    telegram_settings: "AbstractTelegramSettings",
+) -> str:
+    ...
+```
+It must return the full help message as a string.
+
+```python title="mysite/settings.py"
+TELEGRAM= {
+    ...
+    "HELP_TEXT_RENDERER": "myapp.telegram.custom_help_renderer",
+}
 ```
 
 ### TELEGRAM_SETTINGS_MODEL

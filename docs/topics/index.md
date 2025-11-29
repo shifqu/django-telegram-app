@@ -14,3 +14,4 @@ These guides assume you have completed the introductory tutorials.
 - [State Management](state-management.md)
 - [TelegramSettings Design](telegramsettings-design.md)
 - [Testing the bot](testing.md)
+- [Help Command](help-command.md)

@@ -8,9 +8,13 @@ from django.test import SimpleTestCase
 
 from django_telegram_app import get_telegram_settings_model
 from django_telegram_app.bot import get_commands, load_command_class
+from django_telegram_app.bot.base import BaseBotCommand, Step
+from django_telegram_app.bot.bot import DO_NOTHING, _call_command_step, _get_or_create_telegram_settings, send_help
 from django_telegram_app.bot.testing.testcases import TelegramBotTestCase
+from django_telegram_app.conf import settings
 from django_telegram_app.models import CallbackData, Message
 from tests.testapps.samplebot.telegrambot.commands.echo import Command as EchoCommand
+from tests.testapps.samplebot.telegrambot.commands.hiddencommand import Command as HiddenCommand
 from tests.testapps.samplebot.telegrambot.commands.poll import Command as PollCommand
 
 
@@ -35,7 +39,7 @@ class BotTests(TelegramBotTestCase):
 
     def test_discovery_finds_poll_and_echo(self):
         """Test that the poll and echo commands are discovered and can be loaded."""
-        expected_commands = {"poll": PollCommand, "echo": EchoCommand}
+        expected_commands = {"poll": PollCommand, "echo": EchoCommand, "hiddencommand": HiddenCommand}
         for cmd, expected_class in expected_commands.items():
             assert cmd in get_commands().keys()
 
@@ -43,6 +47,7 @@ class BotTests(TelegramBotTestCase):
             cmd_instance = load_command_class(appname, cmd, self.telegram_setting)
             assert isinstance(cmd_instance, expected_class)
             assert cmd_instance.get_command_string() == f"/{cmd}"
+        self.assertEqual(get_commands().keys(), expected_commands.keys())
 
     def test_telegram_invalid_token(self):
         """Test the telegram app with an invalid token."""
@@ -63,7 +68,8 @@ class BotTests(TelegramBotTestCase):
         self.send_text("dummy text")
         self.assertEqual(self.fake_bot_post.call_count, 1)
         self.assertEqual(self.fake_bot_post.call_args.args[0], "sendMessage")
-        self.assertIn("Currently available commands", self.fake_bot_post.call_args[1]["payload"]["text"])
+        self.assertIn("Currently available commands", self.last_bot_message)
+        self.assertNotIn("hiddencommand", self.last_bot_message)
 
     def test_poll_command(self):
         """Test the poll command."""
@@ -143,15 +149,11 @@ class BotTests(TelegramBotTestCase):
 
     def test_call_command_step_do_nothing(self):
         """Test that calling a command step with token DO_NOTHING it does nothing."""
-        from django_telegram_app.bot.bot import DO_NOTHING, _call_command_step
-
         called = _call_command_step(DO_NOTHING, MagicMock(), MagicMock())
         self.assertFalse(called)
 
     def test_call_command_step_callback_not_found(self):
         """Test that calling a command step with an invalid token raises."""
-        from django_telegram_app.bot.bot import _call_command_step
-
         uuid_token = str(uuid.uuid4())
         CallbackData.objects.filter(token=uuid_token).delete()  # Ensure it does not exist
         called = _call_command_step(uuid_token, MagicMock(), MagicMock())
@@ -159,23 +161,18 @@ class BotTests(TelegramBotTestCase):
 
     def test_command_has_steps_abstract(self):
         """Test that accessing steps property on BaseBotCommand raises NotImplementedError."""
-        from django_telegram_app.bot.base import BaseBotCommand
-
         command = BaseBotCommand(MagicMock())
         with self.assertRaises(NotImplementedError):
             _ = command.steps
 
     def test_step_handle_abstract(self):
         """Test that calling handle method on Step raises NotImplementedError."""
-        from django_telegram_app.bot.base import Step
-
         step = Step(MagicMock())
         with self.assertRaises(NotImplementedError):
             step.handle(MagicMock())
 
     def test_steps_back_does_nothing_when_idx_out_of_bounds(self):
         """Test that steps_back does nothing when index would go out of bounds."""
-        from django_telegram_app.bot.base import BaseBotCommand, Step
 
         class DummyCommand(BaseBotCommand):
             @property
@@ -191,7 +188,6 @@ class BotTests(TelegramBotTestCase):
 
     def test_step_get_callback_data_calls_command_get_callback_data_if_not_waiting_for_input(self):
         """Test that Step.get_callback_data calls Command.get_callback_data if not waiting for input."""
-        from django_telegram_app.bot.base import BaseBotCommand, Step
 
         class DummyCommand(BaseBotCommand):
             @property
@@ -211,9 +207,6 @@ class BotTests(TelegramBotTestCase):
 
     def test_get_or_create_telegram_settings_creates_if_allowed(self):
         """Test that get_or_create_telegram_settings creates settings if allowed."""
-        from django_telegram_app.bot.bot import _get_or_create_telegram_settings
-        from django_telegram_app.conf import settings
-
         telegram_update = SimpleNamespace(chat_id=987654321)
         with patch.object(settings, "ALLOW_SETTINGS_CREATION_FROM_UPDATES", False):
             with self.assertRaises(get_telegram_settings_model().DoesNotExist):
@@ -226,8 +219,6 @@ class BotTests(TelegramBotTestCase):
 
     def test_create_callback_provides_default(self):
         """Test that create_callback provides a default value if no kwargs are provided."""
-        from django_telegram_app.bot.base import BaseBotCommand
-
         telegram_settings = MagicMock(name="telegram_settings")
         command = BaseBotCommand(telegram_settings)
         callback_token = command.create_callback("dummy_step", "next_step")
@@ -236,8 +227,6 @@ class BotTests(TelegramBotTestCase):
 
     def test_step_create_callback_always_includes_correlation_key(self):
         """Test that Step.*_step_callback provides includes a correlation key if no or bad original data is provided."""
-        from django_telegram_app.bot.base import BaseBotCommand, Step
-
         telegram_settings = MagicMock(name="telegram_settings")
         command = BaseBotCommand(telegram_settings)
         step = Step(command)
@@ -274,6 +263,19 @@ class BotTests(TelegramBotTestCase):
             with patch.object(self.fake_bot_post, "call_args", new=MagicMock()):
                 self.click_on_button(3.14)  # Invalid type: float  # type: ignore[reportArgumentType]
         self.assertIn("button must be a string or an integer index", str(cm.exception))
+
+    def test_bot_send_help_custom_renderer(self):
+        """Test that bot.send_help uses a custom help renderer if configured."""
+
+        def custom_help_renderer(telegram_settings):  # noqa: ARG001  # pylint: disable=unused-argument
+            return "Custom Help Text"
+
+        telegram_settings = MagicMock(name="telegram_settings")
+        with patch.object(settings, "HELP_RENDERER", "path.to.custom_help_renderer"):
+            with patch("django_telegram_app.bot.bot.import_string", return_value=custom_help_renderer):
+                send_help(123456789, telegram_settings)
+
+        self.assertEqual(self.last_bot_message, "Custom Help Text")
 
 
 class ExtraBotTests(SimpleTestCase):

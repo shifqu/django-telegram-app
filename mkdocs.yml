@@ -81,6 +81,7 @@ nav:
       - State Management: topics/state-management.md
       - TelegramSettings Design: topics/telegramsettings-design.md
       - Testing the Bot: topics/testing.md
+      - Help Command: topics/help-command.md
 
   - How-To Guides:
       - Guides Overview: howto/index.md

@@ -9,6 +9,7 @@ DEFAULTS = {
     "ALLOW_SETTINGS_CREATION_FROM_UPDATES": False,
     "REGISTER_DEFAULT_ADMIN": True,
     "HELP_TEXT_INTRO": "Currently available commands:",
+    "HELP_RENDERER": None,
 }
 REQUIRED = ["BOT_URL"]
 
