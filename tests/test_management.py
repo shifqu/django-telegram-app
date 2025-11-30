@@ -26,7 +26,7 @@ class ManagementCommandTests(TelegramBotTestCase):
         call_command("poll", stdout=out)
 
     def test_base_management_command_checks_command_attribute(self):
-        """Test that the command raises if the 'command' attribute is None."""
+        """Test that poll raises if the 'command' attribute is None."""
         # Patch samplebot's poll command to None to trigger ValueError
         out = StringIO()
         with self.assertRaises(ValueError):
@@ -47,16 +47,16 @@ class ManagementCommandTests(TelegramBotTestCase):
             self.assertIn("Command '/poll' skipped as `should_run` returned False.", out.getvalue())
             out = StringIO()
             call_command("poll", force=True, stdout=out)
-            self.assertIn(f"Started the command for {self.telegram_setting}.", out.getvalue())
+            self.assertIn(f"Started poll for {self.telegram_setting}.", out.getvalue())
             self.assertNotIn("No Telegram-settings found for the given filter. Nothing to do.", out.getvalue())
 
         with patch("tests.testapps.samplebot.management.commands.poll.Command.should_run", return_value=True):
             out = StringIO()
             call_command("poll", force=False, stdout=out)
-            self.assertIn(f"Started the command for {self.telegram_setting}.", out.getvalue())
+            self.assertIn(f"Started poll for {self.telegram_setting}.", out.getvalue())
             out = StringIO()
             call_command("poll", force=True, stdout=out)
-            self.assertIn(f"Started the command for {self.telegram_setting}.", out.getvalue())
+            self.assertIn(f"Started poll for {self.telegram_setting}.", out.getvalue())
 
         self.telegram_setting.delete()
         out = StringIO()
