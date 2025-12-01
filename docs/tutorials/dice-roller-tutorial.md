@@ -163,9 +163,12 @@ At this point, you have a working command:
 - `description` is used in help contexts, so it’s good to keep it short and clear.
 - `steps` (property) is a list of `Step` subclasses, they define the flow of the command.
 - The command always starts with the first step in the list.
+- `translate` is True by default and is used to activate the user's language. Steps can override this behaviour (see below)
 
 ### The steps
 - Steps are subclasses of `Step` and represent a single step in the command.
+- `translate` is None by default, which means the command's `translate` flag is used. If the step's `translate` flag is True or False, this value will be used instead.
+- The `__call__` method of step is used as an entrypoint to start a step. It essentially activates translation and calls the `handle` method.
 - Steps can:
     - request callback data based on the telegram_update's callback token,
     - create new callback data with data for the current step,

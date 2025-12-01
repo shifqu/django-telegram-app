@@ -8,7 +8,11 @@ from __future__ import annotations
 import logging
 import uuid
 from collections.abc import Sequence
+from contextlib import nullcontext
 from typing import TYPE_CHECKING, Any, cast
+
+from django.utils.translation import gettext as _
+from django.utils.translation import override
 
 from django_telegram_app.models import CallbackData
 
@@ -24,6 +28,7 @@ class BaseBotCommand:
 
     description: str = ""
     exclude_from_help: bool = False
+    translate: bool = True
 
     def __init__(self, settings: AbstractTelegramSettings):
         """Initialize the command."""
@@ -33,7 +38,7 @@ class BaseBotCommand:
         """Start the command."""
         logging.info(f"Starting {self.get_name()} for {self.settings}")
         self._clear_state()
-        return self.steps[0].handle(telegram_update)
+        return self.steps[0](telegram_update)
 
     def finish(self, current_step_name: str, telegram_update: TelegramUpdate):
         """Finish the command and clear all data."""
@@ -47,7 +52,7 @@ class BaseBotCommand:
 
         logging.info(f"Canceled the command at step {current_step_name}")
         data = self.get_callback_data(telegram_update.callback_data)
-        cancel_text = data.get("cancel_text", "Command canceled.")
+        cancel_text = data.get("cancel_text", _("Command canceled."))
         send_message(cancel_text, self.settings.chat_id)
         return self.finish(current_step_name, telegram_update)
 
@@ -56,7 +61,7 @@ class BaseBotCommand:
         next_index = self._steps_to_str().index(current_step_name) + 1
         if next_index < len(self.steps):
             next_step = self.steps[next_index]
-            return next_step.handle(telegram_update)
+            return next_step(telegram_update)
         self.finish(current_step_name, telegram_update)
 
     def previous_step(self, current_step_name: str, telegram_update: TelegramUpdate):
@@ -66,13 +71,13 @@ class BaseBotCommand:
         previous_index = self._steps_to_str().index(current_step_name) - steps_back
         if previous_index >= 0:
             previous_step = self.steps[previous_index]
-            return previous_step.handle(telegram_update)
+            return previous_step(telegram_update)
 
     def current_step(self, current_step_name: str, telegram_update: TelegramUpdate):
         """Reload the current step."""
         current_index = self._steps_to_str().index(current_step_name)
         current_step = self.steps[current_index]
-        return current_step.handle(telegram_update)
+        return current_step(telegram_update)
 
     def create_callback(self, step_name: str, action: str, **kwargs):
         """Create callback data for the current command and return the token."""
@@ -141,10 +146,32 @@ class Step:
     This is the base class for all user-defined steps.
     """
 
-    def __init__(self, command: BaseBotCommand, unique_id: str | None = None):
-        """Initialize the step."""
+    def __init__(self, command: BaseBotCommand, unique_id: str | None = None, translate: bool | None = None):
+        """Initialize the step.
+
+        Args:
+            command: The command this step belongs to.
+            unique_id: An optional unique identifier for the step. If not provided, the class name will be used.
+            translate: Whether to activate translation for this step. If None, the command's translate setting will be
+                       used. If True or False, it will override the command's setting.
+        """
         self.command = command
         self.unique_id = unique_id
+        self.translate = translate
+
+    def __call__(self, telegram_update: TelegramUpdate):
+        """Execute the step.
+
+        This activates the appropriate translation based on the user's language code.
+        """
+        if self.translate is None:
+            should_translate = self.command.translate
+        else:
+            should_translate = self.translate
+
+        translation_override = override(telegram_update.language_code) if should_translate else nullcontext()
+        with translation_override:
+            return self.handle(telegram_update)
 
     def handle(self, telegram_update: TelegramUpdate):
         """Handle the step."""
@@ -223,11 +250,13 @@ class TelegramUpdate:
             self.message_id = 0
             self.message_text = str(self.message["text"])
             self.callback_data = ""
+            self.language_code = str(self.message.get("from", {}).get("language_code", "")) or None
         elif self.callback_query:
             self.chat_id = int(self.callback_query["message"]["chat"]["id"])
             self.message_id = int(self.callback_query["message"]["message_id"])
             self.message_text = ""
             self.callback_data = str(self.callback_query.get("data"))
+            self.language_code = str(self.callback_query["from"].get("language_code", "")) or None
         else:
             raise ValueError("Unsupported Telegram update format")
 

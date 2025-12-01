@@ -1,6 +1,7 @@
 """Telegram configuration."""
 
 from django.conf import settings as django_settings
+from django.utils.translation import gettext_lazy as _
 
 DEFAULTS = {
     "ROOT_URL": "telegram/",
@@ -8,7 +9,7 @@ DEFAULTS = {
     "WEBHOOK_TOKEN": "",
     "ALLOW_SETTINGS_CREATION_FROM_UPDATES": False,
     "REGISTER_DEFAULT_ADMIN": True,
-    "HELP_TEXT_INTRO": "Currently available commands:",
+    "HELP_TEXT_INTRO": _("Currently available commands:"),
     "HELP_RENDERER": None,
 }
 REQUIRED = ["BOT_URL"]

@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 
 import requests
 from django.utils.module_loading import import_string
+from django.utils.translation import override
 
 from django_telegram_app import get_telegram_settings_model
 from django_telegram_app.bot import get_commands, load_command_class
@@ -46,17 +47,18 @@ def handle_update(update: dict, telegram_settings: AbstractTelegramSettings | No
         token = telegram_settings.data["_waiting_for"]
         _call_command_step(token, telegram_settings, telegram_update)
     else:
-        send_help(telegram_update.chat_id, telegram_settings)
+        send_help(telegram_update, telegram_settings)
 
 
-def send_help(chat_id: int, telegram_settings: "AbstractTelegramSettings"):
+def send_help(telegram_update: TelegramUpdate, telegram_settings: "AbstractTelegramSettings"):
     """Send a help message to the user.
 
     The intro can be customized by setting HELP_TEXT_INTRO in settings.
     To completely customize the help text, set HELP_RENDERER in settings.
     """
-    help_text = _get_help_text(telegram_settings)
-    send_message(help_text, chat_id)
+    with override(telegram_update.language_code):
+        help_text = _get_help_text(telegram_settings)
+        send_message(help_text, telegram_update.chat_id)
 
 
 def _get_help_text(telegram_settings: "AbstractTelegramSettings") -> str:
@@ -132,7 +134,7 @@ def _start_command_or_send_help(telegram_update: TelegramUpdate, telegram_settin
     try:
         app_name = get_commands()[command_str]
     except KeyError:
-        send_help(telegram_update.chat_id, telegram_settings)
+        send_help(telegram_update, telegram_settings)
         return
     command_cls = load_command_class(app_name, command_str, telegram_settings)
     command_cls.start(telegram_update)

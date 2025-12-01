@@ -101,5 +101,6 @@ class TelegramBotTestCase(TestCase):
             "callback_query": {
                 "message": {"message_id": 123, "chat": {"id": 123456789, "first_name": "test", "type": "private"}},
                 "data": callback_data,
+                "from": {"id": 123456789, "is_bot": False, "first_name": "test"},
             }
         }
