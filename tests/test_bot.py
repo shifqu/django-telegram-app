@@ -271,9 +271,10 @@ class BotTests(TelegramBotTestCase):
             return "Custom Help Text"
 
         telegram_settings = MagicMock(name="telegram_settings")
+        telegram_update = SimpleNamespace(chat_id=123456789, language_code=None)
         with patch.object(settings, "HELP_RENDERER", "path.to.custom_help_renderer"):
             with patch("django_telegram_app.bot.bot.import_string", return_value=custom_help_renderer):
-                send_help(123456789, telegram_settings)
+                send_help(telegram_update, telegram_settings)  # type: ignore[reportArgumentType]
 
         self.assertEqual(self.last_bot_message, "Custom Help Text")
 

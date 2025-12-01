@@ -12,7 +12,7 @@ class Command(BaseBotCommand):
     @property
     def steps(self):
         """Return the steps of the command."""
-        return [WaitForInput(self), Echo(self)]
+        return [WaitForInput(self), Echo(self, translate=False)]
 
 
 class WaitForInput(Step):
