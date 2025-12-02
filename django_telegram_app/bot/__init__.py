@@ -22,13 +22,22 @@ def find_commands(telegrambot_dir: Path):
     return [name for _, name, is_pkg in pkgutil.iter_modules([command_dir]) if not is_pkg and not name.startswith("_")]
 
 
+def get_command_class(app_name: str, name: str) -> type[BaseBotCommand]:
+    """Return the Command class for the given command name and application name.
+
+    Allow all errors raised by the import process (ImportError, AttributeError) to propagate.
+    """
+    module = import_module(f"{app_name}.telegrambot.commands.{name}")
+    return module.Command
+
+
 def load_command_class(app_name: str, name: str, settings: AbstractTelegramSettings) -> BaseBotCommand:
     """Return the Command class instance for the given command name and application name.
 
     Allow all errors raised by the import process (ImportError, AttributeError) to propagate.
     """
-    module = import_module(f"{app_name}.telegrambot.commands.{name}")
-    return module.Command(settings)
+    Command = get_command_class(app_name, name)
+    return Command(settings)
 
 
 @functools.cache
