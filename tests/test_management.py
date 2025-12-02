@@ -67,9 +67,9 @@ class ManagementCommandTests(TelegramBotTestCase):
         """Test that the set_webhook command runs without errors."""
         out = StringIO()
         # Patch requests.post to avoid real HTTP calls
-        with patch(f"{SETWEBHOOK_PATH}.requests.post") as mock_post:
-            mock_post.return_value.status_code = 200
-            mock_post.return_value.json.return_value = {"ok": True, "result": True}
+        with patch(f"{SETWEBHOOK_PATH}.requests.post") as fake_post:
+            fake_post.return_value.status_code = 200
+            fake_post.return_value.json.return_value = {"ok": True, "result": True}
             call_command("setwebhook", "https://example.com", stdout=out)
         self.assertIn("Successfully set webhook to", out.getvalue())
 
@@ -77,10 +77,10 @@ class ManagementCommandTests(TelegramBotTestCase):
         """Test that the set_webhook command runs without errors."""
         out = StringIO()
         # Patch requests.post to avoid real HTTP calls
-        with patch(f"{SETWEBHOOK_PATH}.requests.post") as mock_post:
+        with patch(f"{SETWEBHOOK_PATH}.requests.post") as fake_post:
             with patch(f"{SETWEBHOOK_PATH}.app_settings.WEBHOOK_TOKEN", ""):
-                mock_post.return_value.status_code = 200
-                mock_post.return_value.json.return_value = {"ok": True, "result": True}
+                fake_post.return_value.status_code = 200
+                fake_post.return_value.json.return_value = {"ok": True, "result": True}
                 call_command("setwebhook", "https://example.com", stdout=out)
         self.assertIn("Successfully set webhook to", out.getvalue())
 
@@ -89,9 +89,9 @@ class ManagementCommandTests(TelegramBotTestCase):
         out = StringIO()
         err = StringIO()
         # Patch requests.post to simulate a failure response
-        with patch(f"{SETWEBHOOK_PATH}.requests.post") as mock_post:
-            mock_post.return_value.status_code = 200
-            mock_post.return_value.json.return_value = {"ok": False, "description": "Invalid URL"}
+        with patch(f"{SETWEBHOOK_PATH}.requests.post") as fake_post:
+            fake_post.return_value.status_code = 200
+            fake_post.return_value.json.return_value = {"ok": False, "description": "Invalid URL"}
             with self.assertRaises(CommandError, msg="Failed to set webhook to"):
                 call_command("setwebhook", "https://example.com", stdout=out, stderr=err)
             self.assertEqual(out.getvalue(), "")
