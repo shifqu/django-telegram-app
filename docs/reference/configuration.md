@@ -26,7 +26,7 @@ Here’s a list of optional settings and their default values.
 ### ROOT_URL
 Default: `"telegram/"`
 
-The root URL prefix under which all Telegram-related views are registered. Used in your project's `urls.py` and by the `setwebhook` command to construct the webhook endpoint. Example:
+The root URL prefix under which all Telegram-related views are registered. Used in your project's `urls.py` and by the `setwebhook` and `setcommands` commands to construct the webhook endpoint. Example:
 
 ```python title="mysite/settings.py"
 TELEGRAM = {

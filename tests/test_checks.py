@@ -40,8 +40,8 @@ class ChecksTests(SimpleTestCase):
 
     def test_check_swappable_telegram_settings_unexpected_error(self):
         """Test that an error is returned when an unexpected error occurs during model resolution."""
-        with patch("django_telegram_app.checks.get_telegram_settings_model") as mock_get_model:
-            mock_get_model.side_effect = Exception("Simulated error")
+        with patch("django_telegram_app.checks.get_telegram_settings_model") as fake_get_model:
+            fake_get_model.side_effect = Exception("Simulated error")
             errors = self.run_telegram_checks()
 
         self.assertEqual(len(errors), 1)
@@ -58,8 +58,8 @@ class ChecksTests(SimpleTestCase):
 
     def test_check_get_commands_unexpected_error(self):
         """Test that an error is returned when an unexpected error occurs during command discovery."""
-        with patch("django_telegram_app.checks.get_commands") as mock_get_commands:
-            mock_get_commands.side_effect = Exception("Simulated error")
+        with patch("django_telegram_app.checks.get_commands") as fake_get_commands:
+            fake_get_commands.side_effect = Exception("Simulated error")
             errors = self.run_telegram_checks()
 
         self.assertEqual(len(errors), 1)

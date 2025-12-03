@@ -31,6 +31,14 @@ Practical steps to diagnose problems such as missing updates, callback errors, w
 
 ---
 
+### Set custom commands in your bot’s command list
+
+Learn how to configure or update the commands that appear in Telegram’s built-in command menu for your bot.
+
+👉 See: [`set-custom-commands.md`](set-custom-commands.md)
+
+---
+
 ## When to use these guides
 
 Use a how-to guide when:

@@ -1,7 +1,7 @@
 """Tests for the management package."""
 
 from io import StringIO
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from django.core.management import call_command
 from django.core.management.base import CommandError
@@ -67,9 +67,9 @@ class ManagementCommandTests(TelegramBotTestCase):
         """Test that the set_webhook command runs without errors."""
         out = StringIO()
         # Patch requests.post to avoid real HTTP calls
-        with patch(f"{SETWEBHOOK_PATH}.requests.post") as mock_post:
-            mock_post.return_value.status_code = 200
-            mock_post.return_value.json.return_value = {"ok": True, "result": True}
+        with patch(f"{SETWEBHOOK_PATH}.requests.post") as fake_post:
+            fake_post.return_value.status_code = 200
+            fake_post.return_value.json.return_value = {"ok": True, "result": True}
             call_command("setwebhook", "https://example.com", stdout=out)
         self.assertIn("Successfully set webhook to", out.getvalue())
 
@@ -77,10 +77,10 @@ class ManagementCommandTests(TelegramBotTestCase):
         """Test that the set_webhook command runs without errors."""
         out = StringIO()
         # Patch requests.post to avoid real HTTP calls
-        with patch(f"{SETWEBHOOK_PATH}.requests.post") as mock_post:
+        with patch(f"{SETWEBHOOK_PATH}.requests.post") as fake_post:
             with patch(f"{SETWEBHOOK_PATH}.app_settings.WEBHOOK_TOKEN", ""):
-                mock_post.return_value.status_code = 200
-                mock_post.return_value.json.return_value = {"ok": True, "result": True}
+                fake_post.return_value.status_code = 200
+                fake_post.return_value.json.return_value = {"ok": True, "result": True}
                 call_command("setwebhook", "https://example.com", stdout=out)
         self.assertIn("Successfully set webhook to", out.getvalue())
 
@@ -89,10 +89,95 @@ class ManagementCommandTests(TelegramBotTestCase):
         out = StringIO()
         err = StringIO()
         # Patch requests.post to simulate a failure response
-        with patch(f"{SETWEBHOOK_PATH}.requests.post") as mock_post:
-            mock_post.return_value.status_code = 200
-            mock_post.return_value.json.return_value = {"ok": False, "description": "Invalid URL"}
+        with patch(f"{SETWEBHOOK_PATH}.requests.post") as fake_post:
+            fake_post.return_value.status_code = 200
+            fake_post.return_value.json.return_value = {"ok": False, "description": "Invalid URL"}
             with self.assertRaises(CommandError, msg="Failed to set webhook to"):
                 call_command("setwebhook", "https://example.com", stdout=out, stderr=err)
             self.assertEqual(out.getvalue(), "")
             self.assertIn("Something went wrong while setting the webhook", err.getvalue())
+
+    def test_setcommands(self):
+        """Test that the setcommands command runs without errors."""
+        out = StringIO()
+        # Patch requests.post to avoid real HTTP calls
+        with patch("django_telegram_app.management.commands.setcommands.requests.post") as fake_post:
+            fake_post.return_value.status_code = 200
+            fake_post.return_value.json.return_value = {"ok": True, "result": True}
+            call_command("setcommands", stdout=out)
+        self.assertIn("Successfully called setMyCommands.", out.getvalue())
+        with self.assertRaises(KeyError, msg="language_code"):
+            self._get_language_codes(fake_post)
+
+    def test_setcommands_single_locale(self):
+        """Test that the setcommands command runs without errors for a single locale."""
+        out = StringIO()
+        # Patch requests.post to avoid real HTTP calls
+        with patch("django_telegram_app.management.commands.setcommands.requests.post") as fake_post:
+            fake_post.return_value.status_code = 200
+            fake_post.return_value.json.return_value = {"ok": True, "result": True}
+            call_command("setcommands", "--locale=en", stdout=out)
+        self.assertIn("Successfully called setMyCommands.", out.getvalue())
+        self.assertEqual(["en"], self._get_language_codes(fake_post))
+
+    def test_setcommands_multi_locale(self):
+        """Test that the setcommands command runs without errors for multiple locales."""
+        out = StringIO()
+        # Patch requests.post to avoid real HTTP calls
+        with patch("django_telegram_app.management.commands.setcommands.requests.post") as fake_post:
+            fake_post.return_value.status_code = 200
+            fake_post.return_value.json.return_value = {"ok": True, "result": True}
+            call_command("setcommands", "--locale=en", "--locale=nl", stdout=out)
+        self.assertIn("Successfully called setMyCommands.", out.getvalue())
+        self.assertEqual(["en", "nl"], self._get_language_codes(fake_post))
+
+    def test_setcommands_delete(self):
+        """Test that the setcommands command runs without errors for deleting commands."""
+        out = StringIO()
+        # Patch requests.post to avoid real HTTP calls
+        with patch("django_telegram_app.management.commands.setcommands.requests.post") as fake_post:
+            fake_post.return_value.status_code = 200
+            fake_post.return_value.json.return_value = {"ok": True, "result": True}
+            call_command("setcommands", "--delete", stdout=out)
+        self.assertIn("Successfully called deleteMyCommands.", out.getvalue())
+
+    def test_setcommands_delete_with_locale(self):
+        """Test that the setcommands command runs without errors for deleting commands with locale supplied."""
+        out = StringIO()
+        # Patch requests.post to avoid real HTTP calls
+        with patch("django_telegram_app.management.commands.setcommands.requests.post") as fake_post:
+            fake_post.return_value.status_code = 200
+            fake_post.return_value.json.return_value = {"ok": True, "result": True}
+            call_command("setcommands", "--delete", "--locale=en", stdout=out)
+        self.assertIn("Successfully called deleteMyCommands.", out.getvalue())
+        self.assertEqual(["en"], self._get_language_codes(fake_post))
+
+    def test_setcommands_include_hidden(self):
+        """Test that the setcommands command runs without errors including hidden commands."""
+        out = StringIO()
+        # Patch requests.post to avoid real HTTP calls
+        with patch("django_telegram_app.management.commands.setcommands.requests.post") as fake_post:
+            fake_post.return_value.status_code = 200
+            fake_post.return_value.json.return_value = {"ok": True, "result": True}
+            call_command("setcommands", "--include-hidden", stdout=out)
+        self.assertIn("Successfully called setMyCommands.", out.getvalue())
+
+        command_names = self._get_command_names(fake_post)
+        self.assertIn("hiddencommand", command_names)
+        self.assertIn("hiddencommand", command_names)
+
+    def test_setcommands_failing_post(self):
+        """Test that the setcommands command properly errors when post fails."""
+        out = StringIO()
+        # Patch requests.post to avoid real HTTP calls
+        with patch("django_telegram_app.management.commands.setcommands.requests.post") as fake_post:
+            fake_post.return_value.status_code = 200
+            fake_post.return_value.json.return_value = {"ok": False, "result": True}
+            with self.assertRaises(CommandError, msg="Something went wrong while calling"):
+                call_command("setcommands", "--include-hidden", stdout=out)
+
+    def _get_command_names(self, fake_post: MagicMock):
+        return [cmd["command"] for cmd in fake_post.call_args[1]["json"]["commands"]]
+
+    def _get_language_codes(self, fake_post: MagicMock):
+        return [call_arg[1]["json"]["language_code"] for call_arg in fake_post.call_args_list]

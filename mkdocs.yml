@@ -88,6 +88,7 @@ nav:
       - Swap TelegramSettings: howto/swap-telegramsettings.md
       - Write Management Commands: howto/write-management-commands.md
       - Debug Bot Issues: howto/debug-bot-issues.md
+      - Add custom commands to the list of the bot's commands: howto/set-custom-commands.md
 
   - Reference:
       - Reference Overview: reference/index.md
