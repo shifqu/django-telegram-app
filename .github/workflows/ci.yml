@@ -24,7 +24,7 @@ jobs:
 
       - name: Lint
         run: |
-          ruff check --fix django_telegram_app/ tests/
+          ruff check django_telegram_app/ tests/
           pylint django_telegram_app/ tests/
           ruff format --check django_telegram_app/ tests/
           pyright django_telegram_app/ tests/
