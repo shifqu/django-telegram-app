@@ -1,0 +1,91 @@
+# DJANGO TELEGRAM APP TRANSLATION FILE.
+# Copyright (C) 2025 shifqu
+# This file is distributed under the same license as the django-telegram-app package.
+# shifqu <sonny@softllama.net>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: v1.3.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-12-03 07:26+0000\n"
+"PO-Revision-Date: 2025-12-03 07:30+0000\n"
+"Last-Translator: Sonny <sonny@softllama.net>\n"
+"Language-Team: NL <sonny@softllama.net>\n"
+"Language: Dutch\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+#: django_telegram_app/bot/base.py:55
+msgid "Command canceled."
+msgstr "Commando geannuleerd"
+
+#: django_telegram_app/conf.py:12
+msgid "Currently available commands:"
+msgstr "Momenteel beschikbare commando's"
+
+#: django_telegram_app/models.py:25
+msgid "raw message"
+msgstr "origineel bericht"
+
+#: django_telegram_app/models.py:26
+msgid "error"
+msgstr "error"
+
+#: django_telegram_app/models.py:50
+msgid "message"
+msgstr "bericht"
+
+#: django_telegram_app/models.py:51
+msgid "messages"
+msgstr "berichten"
+
+#: django_telegram_app/models.py:60
+msgid "chat id"
+msgstr "chat id"
+
+#: django_telegram_app/models.py:61
+msgid "data"
+msgstr "data"
+
+#: django_telegram_app/models.py:62
+msgid "updated at"
+msgstr "bijgewerkt op"
+
+#: django_telegram_app/models.py:88
+msgid "telegram setting"
+msgstr "telegram setting"
+
+#: django_telegram_app/models.py:89
+msgid "telegram settings"
+msgstr "telegram settings"
+
+#: django_telegram_app/models.py:102
+msgid "token"
+msgstr "token"
+
+#: django_telegram_app/models.py:103
+msgid "command"
+msgstr "commando"
+
+#: django_telegram_app/models.py:104
+msgid "step"
+msgstr "stap"
+
+#: django_telegram_app/models.py:106
+msgid "action"
+msgstr "actie"
+
+#: django_telegram_app/models.py:108
+msgid "Name of a function on the command"
+msgstr "Naam van een functie op het commando"
+
+#: django_telegram_app/models.py:110 django_telegram_app/models.py:116
+#: django_telegram_app/models.py:117
+msgid "callback data"
+msgstr "callback data"
+
+#: django_telegram_app/models.py:111
+msgid "created at"
+msgstr "aangemaakt op"
