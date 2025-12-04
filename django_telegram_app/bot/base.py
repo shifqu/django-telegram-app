@@ -52,7 +52,8 @@ class BaseBotCommand:
 
         logging.info(f"Canceled the command at step {current_step_name}")
         data = self.get_callback_data(telegram_update.callback_data)
-        cancel_text = data.get("cancel_text", _("Command canceled."))
+        with override(telegram_update.language_code):
+            cancel_text = data.get("cancel_text", _("Command canceled."))
         send_message(cancel_text, self.settings.chat_id)
         return self.finish(current_step_name, telegram_update)
 
