@@ -61,9 +61,10 @@ class Command(BaseCommand):
 
         for locale in locales:
             with override(locale):
-                command_info_list = self._get_command_info_list(include_hidden)
+                command_info_list = self._get_command_info_list(include_hidden, clear_cache=True)
                 payload: dict = {"commands": command_info_list, "language_code": locale}
                 self._post(api_method_name, **payload)
+        get_commands.cache_clear()  # Clear cache after locale-specific loading to avoid it being stuck in last locale.
 
     def _deletecommands(self, api_method_name: str, locales: list[str] | None):
         """Delete the bot commands for specific locales.
@@ -89,8 +90,10 @@ class Command(BaseCommand):
             raise CommandError(msg)
         self.stdout.write(self.style.SUCCESS(f"Successfully called {api_method_name}."))
 
-    def _get_command_info_list(self, include_hidden: bool) -> list[dict[str, str]]:
+    def _get_command_info_list(self, include_hidden: bool, clear_cache: bool = False) -> list[dict[str, str]]:
         command_info_list = []
+        if clear_cache:
+            get_commands.cache_clear()
         for command_name, app_name in get_commands().items():
             command = get_command_class(app_name, command_name)
             if not include_hidden and command.exclude_from_help:
