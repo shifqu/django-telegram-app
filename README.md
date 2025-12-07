@@ -47,7 +47,7 @@
 ## Getting started
 
 To set up your bot, follow the step-by-step guide in  
-➡️ [Getting started](https://shifqu.github.io/django-telegram-app/getting-started)
+➡️ [Getting started](https://shifqu.github.io/django-telegram-app/tutorials/getting-started)
 
 ## Support
 
