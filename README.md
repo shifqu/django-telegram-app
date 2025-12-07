@@ -3,7 +3,7 @@
 </h1>
 
 <p align="center">
-  <img src="docs/assets/banner.png" alt="django-telegram-app logo" width="480">
+  <img src="https://raw.githubusercontent.com/shifqu/django-telegram-app/main/docs/assets/banner.png" alt="django-telegram-app logo" width="480">
 </p>
 
 <p align="center">
