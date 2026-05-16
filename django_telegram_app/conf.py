@@ -1,5 +1,7 @@
 """Telegram configuration."""
 
+from typing import Any
+
 from django.conf import settings as django_settings
 from django.utils.translation import gettext_lazy as _
 
@@ -24,11 +26,11 @@ class AppSettings:
         merged_settings = {**DEFAULTS, **app_settings}
         self._settings = merged_settings
 
-    def __getattr__(self, name):
+    def __getattr__(self, name: str) -> Any:
         """Get a setting by name."""
         return self._settings[name]
 
-    def missing_settings(self):
+    def missing_settings(self) -> list[str]:
         """Return a list of missing required settings."""
         return [k for k in REQUIRED if k not in self._settings]
 
