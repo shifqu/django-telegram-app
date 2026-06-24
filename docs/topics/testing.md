@@ -109,8 +109,8 @@ messages = [
 
 `TelegramBotTestCase` ensures:
 
-- all mocks are cleaned up  
-- callback data created during tests is removed  
+- all mocks are cleaned up via `patch.stopall()`  
+- callback data is cleaned up via Django's standard test database rollback  
 - webhook posting uses your project's `WEBHOOK_TOKEN`  
 
 ---

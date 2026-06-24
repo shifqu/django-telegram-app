@@ -24,8 +24,7 @@ The dispatcher determines whether the update:
 - starts a new command
 - continues an existing command
 - triggers a callback
-- send the help message
-- or should be ignored
+- sends the help message (as a fallback for any unrecognized input)
 
 The dispatcher instantiates the appropriate `BaseBotCommand` subclass based on the incoming update.
 
