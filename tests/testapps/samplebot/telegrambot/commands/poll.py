@@ -51,10 +51,10 @@ class AskFavouriteSport(Step):
 
     def _maybe_add_pagination_buttons(self, keyboard: list, days: list, data: dict, current_page: int, end: int):
         if current_page > 1:
-            back_callback = self.current_step_callback(data, current_page=current_page - 1)
+            back_callback = self.callback_to(self, data, current_page=current_page - 1)
             keyboard.append([{"text": "⬅️ Back", "callback_data": back_callback}])
         if len(days) > end:
-            next_callback = self.current_step_callback(data, current_page=current_page + 1)
+            next_callback = self.callback_to(self, data, current_page=current_page + 1)
             keyboard.append([{"text": "➡️ Next", "callback_data": next_callback}])
 
 

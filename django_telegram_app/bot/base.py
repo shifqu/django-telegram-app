@@ -10,6 +10,7 @@ import uuid
 from collections.abc import Sequence
 from contextlib import nullcontext
 from typing import TYPE_CHECKING, Any, cast
+from warnings import deprecated
 
 from django.utils.translation import gettext as _
 from django.utils.translation import override
@@ -18,6 +19,8 @@ from django_telegram_app.models import CallbackData
 
 if TYPE_CHECKING:
     from django_telegram_app.models import AbstractTelegramSettings
+
+type StepRef = str | Step | type[Step]
 
 
 class BaseBotCommand:
@@ -40,6 +43,13 @@ class BaseBotCommand:
         self._clear_state()
         return self.steps[0](telegram_update)
 
+    def go_to(self, step_name: str, telegram_update: TelegramUpdate):
+        """Go to a specific step in the command."""
+        if step_name not in self._steps_to_str():
+            raise ValueError(f"Step {step_name} is not a valid step for this command.")
+        step_index = self._steps_to_str().index(step_name)
+        return self.steps[step_index](telegram_update)
+
     def finish(self, current_step_name: str, telegram_update: TelegramUpdate):
         """Finish the command and clear all data."""
         logging.info(f"Finishing the command at step {current_step_name}")
@@ -48,13 +58,11 @@ class BaseBotCommand:
 
     def cancel(self, current_step_name: str, telegram_update: TelegramUpdate):
         """Cancel the command and clear all data."""
-        from django_telegram_app.bot.bot import send_message
-
         logging.info(f"Canceled the command at step {current_step_name}")
         data = self.get_callback_data(telegram_update.callback_data)
         with override(telegram_update.language_code):
             cancel_text = data.get("cancel_text", _("Command canceled."))
-        send_message(cancel_text, self.settings.chat_id)
+        self._send_message(cancel_text, self.settings.chat_id)
         return self.finish(current_step_name, telegram_update)
 
     def next_step(self, current_step_name: str, telegram_update: TelegramUpdate):
@@ -74,12 +82,18 @@ class BaseBotCommand:
             previous_step = self.steps[previous_index]
             return previous_step(telegram_update)
 
+    @deprecated(
+        "current_step() is deprecated and will be removed in v2. Use Command.go_to() instead; note that its signature "
+        "differs."
+    )
     def current_step(self, current_step_name: str, telegram_update: TelegramUpdate):
         """Reload the current step."""
-        current_index = self._steps_to_str().index(current_step_name)
-        current_step = self.steps[current_index]
-        return current_step(telegram_update)
+        return self.go_to(current_step_name, telegram_update)
 
+    @deprecated(
+        "create_callback() is deprecated and will be removed in v2. Prefer to use Step.callback_to() or use "
+        "Command._create_callback() instead; note that their signature differs."
+    )
     def create_callback(self, step_name: str, action: str, **kwargs):
         """Create callback data for the current command and return the token."""
         if not kwargs:
@@ -90,6 +104,10 @@ class BaseBotCommand:
         callback_data.save()
         return str(callback_data.token)
 
+    @deprecated(
+        "get_callback() is deprecated and will be removed in v2. Prefer to use Step.get_callback_data() or use "
+        "Command.get_callback_data() instead; note that their signature differs."
+    )
     def get_callback(self, token: str):
         """Return the callback for the given token."""
         return CallbackData.objects.get(token=token)
@@ -101,7 +119,7 @@ class BaseBotCommand:
         """
         if not callback_token:
             return self._get_default_callback_data()
-        callback_data = self.get_callback(callback_token)
+        callback_data = CallbackData.objects.get(token=callback_token)
         return callback_data.data
 
     @property
@@ -122,6 +140,52 @@ class BaseBotCommand:
         """Return the command string."""
         return f"/{cls.get_name()}"
 
+    def _create_callback(self, action: str, step: StepRef, **kwargs):
+        """Create callback data for the given action and step_name and return the token.
+
+        Note:
+            Providing a step class works only if exactly one registered step matches that class.
+        """
+        if not kwargs:
+            kwargs = self._get_default_callback_data()
+        if "correlation_key" not in kwargs:
+            kwargs.update(self._get_default_callback_data())
+        command_string = self.get_command_string()
+        step_name = self._resolve_step_name(step)
+        callback_data = CallbackData(command=command_string, step=step_name, action=action, data=kwargs)
+        callback_data.save()
+        return str(callback_data.token)
+
+    def _resolve_step_name(self, step: StepRef) -> str:
+        """Resolve the step name from a string or Step instance."""
+        if isinstance(step, Step):
+            return step.name
+
+        if isinstance(step, str):
+            return step
+
+        matches = [command_step for command_step in self.steps if isinstance(command_step, step)]
+        if len(matches) == 1:
+            return matches[0].name
+
+        if len(matches) > 1:
+            raise ValueError(
+                f"Step class {step.__name__} is used multiple times in command "
+                f"{self.get_name()}. Pass a step instance or step name instead."
+            )
+
+        raise ValueError(f"Invalid step type: {type(step)}. Must be a string, Step instance or Step type.")
+
+    def _send_message(self, text: str, chat_id: int, message_id: int = 0):
+        """Send a message to the given chat_id.
+
+        This is a wrapper around the send_message function to avoid circular imports. It also makes proper bot
+        abstraction easier in the future.
+        """
+        from django_telegram_app.bot.bot import send_message
+
+        send_message(text, chat_id, message_id=message_id)
+
     def _get_default_callback_data(self):
         """Return a dictionary with correlation key as default callback data."""
         return {"correlation_key": str(uuid.uuid4())}
@@ -134,7 +198,9 @@ class BaseBotCommand:
     def _clear_callback_data(self, telegram_update: TelegramUpdate):
         """Clear callback data for the current command."""
         step_data = self.get_callback_data(telegram_update.callback_data)
-        correlation_key = step_data.get("correlation_key", "non_existent_key")
+        correlation_key = step_data.get("correlation_key")
+        if not correlation_key:
+            return
         CallbackData.objects.filter(data__correlation_key=correlation_key).delete()
 
     def _steps_to_str(self):
@@ -178,6 +244,12 @@ class Step:
         """Handle the step."""
         raise NotImplementedError("This method should be overridden by subclasses.")
 
+    def callback_to(self, step: StepRef, original_data: dict | None = None, **kwargs: Any) -> str:
+        """Create a callback that routes to a specific step."""
+        original_data = original_data or {}
+        data = {**original_data, **kwargs}
+        return self.command._create_callback("go_to", step, **data)
+
     def next_step_callback(self, original_data: dict | None = None, **kwargs):
         """Create a callback to advance to the next step."""
         return self._create_callback("next_step", original_data, **kwargs)
@@ -189,7 +261,7 @@ class Step:
 
     def current_step_callback(self, original_data: dict | None = None, **kwargs):
         """Create a callback to reload the current step with the provided data."""
-        return self._create_callback("current_step", original_data, **kwargs)
+        return self.callback_to(self.name, original_data, **kwargs)
 
     def cancel_callback(self, original_data: dict | None = None, **kwargs):
         """Create a callback to cancel the command."""
@@ -228,14 +300,21 @@ class Step:
 
     @property
     def name(self):
-        """Return the name of the step."""
+        """Return the name of the step.
+
+        This is either the unique_id provided during initialization or the class name of the step.
+        """
         return self.unique_id or type(self).__name__
 
     def _create_callback(self, action: str, original_data: dict | None = None, **kwargs):
         """Create callback data for the current step and return the token."""
         original_data = original_data or {}
         data = {**original_data, **kwargs}
-        return self.command.create_callback(self.name, action, **data)
+        return self.command._create_callback(action, self.name, **data)
+
+    def __str__(self):
+        """Return the name of the step."""
+        return self.name
 
 
 class TelegramUpdate:
