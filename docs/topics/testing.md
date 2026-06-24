@@ -25,7 +25,7 @@ These tools ensure your bot's logic can be tested fully **without network access
 All tests should subclass:
 
 ```python
-from django_telegram_app.testing import TelegramBotTestCase
+from django_telegram_app.testing.testcases import TelegramBotTestCase
 ```
 
 This base class provides:
@@ -109,8 +109,8 @@ messages = [
 
 `TelegramBotTestCase` ensures:
 
-- all mocks are cleaned up  
-- callback data created during tests is removed  
+- all mocks are cleaned up via `patch.stopall()`  
+- callback data is cleaned up via Django's standard test database rollback  
 - webhook posting uses your project's `WEBHOOK_TOKEN`  
 
 ---

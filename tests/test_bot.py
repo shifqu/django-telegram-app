@@ -221,7 +221,7 @@ class BotTests(TelegramBotTestCase):
         """Test that create_callback provides a default value if no kwargs are provided."""
         telegram_settings = MagicMock(name="telegram_settings")
         command = BaseBotCommand(telegram_settings)
-        callback_token = command.create_callback("dummy_step", "next_step")
+        callback_token = command._create_callback("dummy_step", "next_step")
         callback_data = command.get_callback(callback_token)
         self.assertIn("correlation_key", callback_data.data)
 

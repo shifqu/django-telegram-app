@@ -8,6 +8,8 @@ This is helpful when a command is scheduled (e.g., daily via cron) but should on
 This is helpful when a command should only be run for specific telegram_settings.
 - Provides a `handle_command` hook to customize the update handling.
 This is useful if you'd like to customize the update that was sent or do extra things like activate a specific language, etc...
+- Accepts a `--force` flag to bypass `should_run()` and always execute the command.  
+This is useful for manual one-off runs or testing without changing the `should_run()` logic.
 
 ---
 

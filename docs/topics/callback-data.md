@@ -16,16 +16,28 @@ the library stores structured data in the `CallbackData` model and inserts a sho
 
 ## Creating callback data
 
-Inside a step:
+Steps expose several helpers that each create a `CallbackData` entry and return a token string for use in an inline button:
+
+| Method | Routes to |
+|---|---|
+| `self.next_step_callback(**kwargs)` | the next step in the command |
+| `self.previous_step_callback(steps_back=N, **kwargs)` | N steps back |
+| `self.current_step_callback(**kwargs)` | the same step again (reload) |
+| `self.cancel_callback(**kwargs)` | cancels the command |
+| `self.callback_to(step, **kwargs)` | any specific step by name, instance, or class |
+
+`callback_to()` is the most flexible option — use it when you need to jump to an arbitrary step rather than following the linear order:
 
 ```python
-token = self.next_step_callback(some_value=123)
+token = self.callback_to("StepName", some_value=123)
+# or pass the step class (only works when exactly one instance of that class is registered):
+token = self.callback_to(SomeStep, some_value=123)
 ```
 
-This:
-1. Creates a default `CallbackData` object
-2. Stores your provided kwargs
-3. Returns a short token string to use in the inline button
+All helpers:
+1. Create a `CallbackData` object in the database
+2. Store your provided kwargs alongside a `correlation_key`
+3. Return a short token string to use in the inline button
 
 ---
 
@@ -40,6 +52,18 @@ data = self.get_callback_data(update)
 This:
 - resolves the token
 - returns the stored dict
+
+---
+
+## How `callback_to()` and `go_to()` relate
+
+When a user taps a button whose token was created with `callback_to()`, the dispatcher calls `BaseBotCommand.go_to(step_name, telegram_update)` on the command instance. You can also call `go_to()` directly from within a step or command when you want to redirect to a specific step without waiting for a button press:
+
+```python
+return self.command.go_to("StepName", telegram_update)
+```
+
+`go_to()` raises `ValueError` if the step name is not registered on the command.
 
 ---
 
