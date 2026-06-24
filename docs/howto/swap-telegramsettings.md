@@ -50,7 +50,7 @@ class CustomTelegramSettings(AbstractTelegramSettings):
 ```
 - Point Django to your model via the TELEGRAM_SETTINGS_MODEL setting.
 ```python title="mysite/settings.py"
-TELEGRAM_SETTINGS_MODEL = "myapp.TelegramSettings"
+TELEGRAM_SETTINGS_MODEL = "myapp.CustomTelegramSettings"
 ```
 - Run migrations as usual.
 ```text

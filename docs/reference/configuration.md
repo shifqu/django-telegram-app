@@ -96,7 +96,7 @@ TELEGRAM= {
 }
 ```
 
-### HELP_TEXT_RENDERER
+### HELP_RENDERER
 Default: `None`
 
 Provides full control over the help message that django_telegram_app sends when unexpected or unrecognized input is received.
@@ -115,7 +115,7 @@ It must return the full help message as a string.
 ```python title="mysite/settings.py"
 TELEGRAM= {
     ...
-    "HELP_TEXT_RENDERER": "myapp.telegram.custom_help_renderer",
+    "HELP_RENDERER": "myapp.telegram.custom_help_renderer",
 }
 ```
 

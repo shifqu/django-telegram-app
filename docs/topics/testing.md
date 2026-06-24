@@ -25,7 +25,7 @@ These tools ensure your bot's logic can be tested fully **without network access
 All tests should subclass:
 
 ```python
-from django_telegram_app.testing import TelegramBotTestCase
+from django_telegram_app.testing.testcases import TelegramBotTestCase
 ```
 
 This base class provides:

@@ -44,7 +44,7 @@ class Command(BaseBotCommand):
     ...
 ```
 
-## Full Customization with HELP_TEXT_RENDERER
+## Full Customization with HELP_RENDERER
 
 If you want complete control over the help message---including the
 command list---you can provide a custom renderer.
@@ -54,7 +54,7 @@ Set:
 ```python title="mysite/settings.py"
 TELEGRAM = {
     ...
-    "HELP_TEXT_RENDERER": "path.to.my_help_renderer"
+    "HELP_RENDERER": "path.to.my_help_renderer"
 }
 ```
 
@@ -65,4 +65,4 @@ def my_help_renderer(telegram_settings: "AbstractTelegramSettings") -> str:
     ...
 ```
 
-If `HELP_TEXT_RENDERER` is set, `HELP_TEXT_INTRO` is ignored entirely.
+If `HELP_RENDERER` is set, `HELP_TEXT_INTRO` is ignored entirely.

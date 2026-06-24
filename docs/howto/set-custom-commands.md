@@ -51,7 +51,7 @@ This sets translated commands for each specified locale.
 To clear the command list entirely:
 
 ``` bash
-python.manage.py setcommands --delete
+python manage.py setcommands --delete
 ```
 
 If successful:
